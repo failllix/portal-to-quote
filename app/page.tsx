@@ -3,6 +3,7 @@
 import type React from "react";
 import { type ChangeEvent, useEffect, useRef, useState } from "react";
 import Button from "./components/button";
+import Heading1 from "./components/Heading1";
 
 interface DropZoneText {
   text: string;
@@ -114,8 +115,8 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="px-12 mx-auto max-w-300">
-      <h1>File upload</h1>
+    <main className="px-12 mx-auto max-w-300 mt-12">
+      <Heading1>File upload</Heading1>
       <label
         ref={dropZoneRef}
         className={`mt-8 border-2 flex items-center justify-center border-amber-400 h-80 cursor-pointer rounded-lg ${
