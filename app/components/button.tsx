@@ -16,7 +16,9 @@ export default function Button({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`px-4 py-2 border rounded-lg ${disabled && "opacity-50"}`}
+      className={`px-4 py-2 border rounded-lg cursor-pointer ${
+        disabled && "opacity-50"
+      }`}
     >
       {children}
     </button>
