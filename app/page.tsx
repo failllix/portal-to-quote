@@ -117,7 +117,6 @@ export default function Home() {
           className="hidden"
           onChange={changeHandler}
           type="file"
-          multiple
           accept=".step,.stp"
         />
       </label>

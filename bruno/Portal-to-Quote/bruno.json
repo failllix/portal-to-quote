@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "Portal-to-Quote",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
