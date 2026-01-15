@@ -1,65 +1,157 @@
-import Image from "next/image";
+"use client";
+
+import type React from "react";
+import { type ChangeEvent, useEffect, useRef, useState } from "react";
+import Button from "./components/button";
+
+interface FileError {
+  fileName: string;
+  message: string;
+}
 
 export default function Home() {
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [fileErrors, setFileErrors] = useState<FileError[]>([]);
+  const dropZoneRef = useRef<HTMLLabelElement>(null);
+
+  function validateAndUpdateSelectedFiles(files: File[]) {
+    setFileErrors([]);
+    setSelectedFiles([]);
+
+    const updatedFileErrors: FileError[] = [];
+
+    const validatedFiles = files
+      .filter((file) => {
+        if (file.name.endsWith(".step") || file.name.endsWith(".stp")) {
+          return true;
+        }
+
+        updatedFileErrors.push({
+          fileName: file.name,
+          message: `File type${file.name.split(".").at(-1)} is not supported`,
+        });
+
+        return false;
+      })
+      .filter((file) => {
+        if (file.size < 50_000_000) {
+          return true;
+        }
+
+        updatedFileErrors.push({
+          fileName: file.name,
+          message: "Filesize is larger than 50MB",
+        });
+
+        return false;
+      });
+
+    setFileErrors(updatedFileErrors);
+    setSelectedFiles(validatedFiles);
+  }
+
+  function changeHandler(event: ChangeEvent<HTMLInputElement>) {
+    const files = event.target.files ? Array.from(event.target.files) : [];
+    validateAndUpdateSelectedFiles(files);
+    event.target.value = "";
+  }
+
+  function dropHandler(event: React.DragEvent<HTMLLabelElement>) {
+    event.preventDefault();
+    const files = [...event.dataTransfer.items]
+      .map((item) => item.getAsFile())
+      .filter((file): file is File => file !== null);
+
+    validateAndUpdateSelectedFiles(files);
+  }
+
+  function clearButtonHandler(): void {
+    setSelectedFiles([]);
+    setFileErrors([]);
+  }
+
+  useEffect(() => {
+    const onDrop = (event: DragEvent) => {
+      if (
+        [...(event.dataTransfer?.items ?? [])].some(
+          (item) => item.kind === "file"
+        )
+      ) {
+        event.preventDefault();
+      }
+    };
+
+    const onDragOver = (event: DragEvent) => {
+      const fileItems = [...(event.dataTransfer?.items ?? [])].filter(
+        (item) => item.kind === "file"
+      );
+      if (fileItems.length > 0) {
+        event.preventDefault();
+        if (!dropZoneRef.current?.contains(event.target as Node)) {
+          if (event.dataTransfer != null) {
+            event.dataTransfer.dropEffect = "none";
+          }
+        }
+      }
+    };
+
+    window.addEventListener("drop", onDrop);
+    window.addEventListener("dragover", onDragOver);
+
+    return () => {
+      window.removeEventListener("drop", onDrop);
+      window.removeEventListener("dragover", onDragOver);
+    };
+  }, []);
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <main className="px-12 mx-auto max-w-300">
+      <h1>File upload</h1>
+      <label
+        ref={dropZoneRef}
+        className="mt-8 border-2 flex items-center justify-center border-amber-400 h-80 cursor-pointer rounded-lg"
+        onDrop={dropHandler}
+      >
+        Drop .step or .stp files here, or click to upload.
+        <input
+          className="hidden"
+          onChange={changeHandler}
+          type="file"
+          multiple
+          accept=".step,.stp"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+      </label>
+
+      {selectedFiles.length > 0 && (
+        <div className="mt-8">
+          <h2>Selected Files</h2>
+          <ul>
+            {selectedFiles.map((file) => (
+              <li key={file.name}>{file.name}</li>
+            ))}
+          </ul>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      )}
+
+      {fileErrors.length > 0 && (
+        <div className="mt-8">
+          <h2>Errors</h2>
+          <ul className="text-(--error)">
+            {fileErrors.map((error) => (
+              <li key={error.fileName}>
+                {error.fileName}: {error.message}
+              </li>
+            ))}
+          </ul>
         </div>
-      </main>
-    </div>
+      )}
+
+      <div className="mt-8 flex gap-4">
+        <Button type="button" onClick={clearButtonHandler}>
+          Clear
+        </Button>
+        <Button type="button">Configure Materials</Button>
+      </div>
+    </main>
   );
 }
