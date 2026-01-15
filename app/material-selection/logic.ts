@@ -1,9 +1,21 @@
+export interface PriceDetails {
+  unitPrice: number;
+  subtotal: number;
+  discountPercentage: number;
+  discount: number;
+  total: number;
+}
+
 export function calculatePriceDetails({
-  geometryResult,
+  volumeCm3,
   materialPrice,
   quantity,
-}) {
-  const unitPrice = geometryResult.properties.volumeCm3 * materialPrice;
+}: {
+  volumeCm3: number;
+  materialPrice: number;
+  quantity: number;
+}): PriceDetails {
+  const unitPrice = volumeCm3 * materialPrice;
   const subtotal = unitPrice * quantity;
   const discountPercentage = getDiscountRate(quantity);
   const discount = subtotal * discountPercentage;

@@ -18,12 +18,21 @@ const GeometryProperties = z.object({
   surfaceArea: z.number(),
 });
 
-const GeometrySuccessResult = z.object({
+const GeometryResult = z.object({
   success: z.boolean(),
-  properties: GeometryProperties.optional(),
+  properties: GeometryProperties,
   processingTimeMs: z.number(),
-  error: z.string().optional(),
 });
+
+const MaterialsResult = z.array(
+  z.object({
+    name: z.string(),
+    code: z.string(),
+    price: z.number(),
+    leadTimeDays: z.number(),
+    properties: z.array(z.string()),
+  })
+);
 
 const ErrorResult = z.object({
   message: z.string(),
@@ -40,14 +49,25 @@ export const geometryContract = contract.router({
       202: FileUploadResult,
     },
     summary: "Upload a CAD file for async processing",
+    strictStatusCodes: true,
   },
-  geometryResult: {
+  getGeometryResult: {
     method: "GET",
     path: "/api/files/:id",
     responses: {
-      200: GeometrySuccessResult,
+      200: GeometryResult,
       404: ErrorResult,
     },
     summary: "Result of the geometry extraction service",
+    strictStatusCodes: true,
+  },
+  getMaterials: {
+    method: "GET",
+    path: "/api/materials",
+    responses: {
+      200: MaterialsResult,
+    },
+    summary: "Available materials",
+    strictStatusCodes: true,
   },
 });

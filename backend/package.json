@@ -2,10 +2,9 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "Backend for the portal to quote application",
-  "type": "module",
   "main": "main.ts",
   "scripts": {
-    "dev": "rm -r ./uploads && nodemon --watch ./ --ext ts --exec ts-node main.ts"
+    "dev": "rm -rf ./uploads && nodemon --watch ./ --ext ts --exec tsx main.ts"
   },
   "dependencies": {
     "@ts-rest/express": "3.52.1",
@@ -19,6 +18,7 @@
     "@types/express": "5.0.6",
     "@types/multer": "2.0.0",
     "nodemon": "3.1.11",
-    "ts-node": "10.9.2"
+    "tsx": "4.21.0",
+    "typescript": "5.9.3"
   }
 }

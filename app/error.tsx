@@ -1,0 +1,26 @@
+"use client";
+import Button from "./components/button";
+import Heading1 from "./components/Heading1";
+
+export default function GlobalError({
+  error,
+  reset,
+}: {
+  error: Error & { digest?: string };
+  reset: () => void;
+}) {
+  return (
+    <html lang="en" className="h-full">
+      <body className="h-full p-8 text-center">
+        <div className="h-full flex flex-col gap-8 items-center justify-center">
+          <Heading1>Something went wrong!</Heading1>
+          <p>{error.message}</p>
+          {error.digest && <p>{error.digest}</p>}
+          <Button type="reset" onClick={() => reset()}>
+            Try again
+          </Button>
+        </div>
+      </body>
+    </html>
+  );
+}
