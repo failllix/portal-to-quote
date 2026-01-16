@@ -4,7 +4,7 @@
   "description": "Backend for the portal to quote application",
   "main": "main.ts",
   "scripts": {
-    "dev": "rm -rf ./uploads && nodemon --watch ./ --ext ts --exec tsx main.ts"
+    "dev": "ls ../shared/node_modules && rm -rf ./uploads && nodemon --watch ./ --ext ts --exec tsx main.ts"
   },
   "dependencies": {
     "@ts-rest/express": "3.52.1",
@@ -19,6 +19,7 @@
     "@types/multer": "2.0.0",
     "nodemon": "3.1.11",
     "tsx": "4.21.0",
-    "typescript": "5.9.3"
+    "typescript": "5.9.3",
+    "zod": "3.25.76"
   }
 }
