@@ -4,7 +4,7 @@
   "description": "Backend for the portal to quote application",
   "main": "main.ts",
   "scripts": {
-    "dev": "ls ../shared/node_modules && rm -rf ./uploads && nodemon --watch ./ --ext ts --exec tsx main.ts"
+    "dev": "rm -rf ./uploads && nodemon --watch ./ --ext ts --exec tsx main.ts"
   },
   "dependencies": {
     "@ts-rest/express": "3.52.1",
