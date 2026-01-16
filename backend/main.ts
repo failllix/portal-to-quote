@@ -4,7 +4,7 @@ import cors from "cors";
 import express from "express";
 import { geometryContract } from "../shared/contract";
 import { db } from "../db/db";
-import { files } from "../db/schema";
+import { files, materials } from "../db/schema";
 import { eq } from "drizzle-orm";
 
 const app = express();
@@ -131,45 +131,14 @@ const router = s.router(geometryContract, {
     }
   },
   getMaterials: async () => {
+    const materialsResult = await db.select().from(materials);
+
     return {
       status: 200,
-      body: [
-        {
-          name: "PLA",
-          code: "pla",
-          price: 0.08,
-          leadTimeDays: 3,
-          properties: ["Standard prototyping", "Biodegradable"],
-        },
-        {
-          name: "ABS",
-          code: "abs",
-          price: 0.12,
-          leadTimeDays: 3,
-          properties: ["Heat resistant", "Good mechanical strength"],
-        },
-        {
-          name: "Nylon PA12",
-          code: "pa12",
-          price: 0.28,
-          leadTimeDays: 3,
-          properties: ["Industrial grade", "High wear resistance"],
-        },
-        {
-          name: "Polypropylene",
-          code: "pp",
-          price: 0.18,
-          leadTimeDays: 7,
-          properties: ["Chemical resistant", "Living hinges"],
-        },
-        {
-          name: "TPU 95A",
-          code: "tpu",
-          price: 0.22,
-          leadTimeDays: 5,
-          properties: ["Flexible", "Impact resistant"],
-        },
-      ],
+      body: materialsResult.map(material => ({
+        ...material,
+        price: Number(material.price),
+      })),
     };
   },
 });
