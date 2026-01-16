@@ -1,0 +1,20 @@
+{
+  "name": "db",
+  "version": "1.0.0",
+  "scripts": {
+    "push": "drizzle-kit push",
+    "migrate": "drizzle-kit migrate",
+    "seed": "tsx seed.ts",
+    "force-update": "npm run push && npm run seed"
+  },
+  "dependencies": {
+    "dotenv": "17.2.3",
+    "drizzle-orm": "0.45.1",
+    "drizzle-seed": "0.3.1",
+    "postgres": "3.4.8"
+  },
+  "devDependencies": {
+    "drizzle-kit": "0.31.8",
+    "tsx": "4.21.0"
+  }
+}
