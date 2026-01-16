@@ -1,0 +1,21 @@
+meta {
+  name: Get Order Details
+  type: http
+  seq: 7
+}
+
+get {
+  url: {{base_url}}/api/orders/{{order_id}}
+  body: none
+  auth: inherit
+}
+
+body:json {
+  {
+    "fileId": "{{file_id}}"
+  }
+}
+
+vars:post-response {
+  quote_id: res.body.id
+}

@@ -4,7 +4,7 @@ import cors from "cors";
 import express from "express";
 import { geometryContract } from "../shared/contract";
 import { db } from "../db/db";
-import { files, materials } from "../db/schema";
+import { files, materials, orders, quotes } from "../db/schema";
 import { eq } from "drizzle-orm";
 
 const app = express();
@@ -56,21 +56,19 @@ const router = s.router(geometryContract, {
       status: 202,
       body: {
         id,
-        status: "IN_PROCESS",
+        status: "in_process",
       },
     };
   },
-  getGeometryResult: async ({ params }) => {
-    const fileId = params.id;
+  getGeometryResult: async ({ params: { id: fileId } }) => {
     console.log("Returning geometry data for file with id", fileId);
 
     try {
-      const fileData = await db
-        .select()
-        .from(files)
-        .where(eq(files.id, fileId));
+      const file = await db.query.files.findFirst({
+        where: eq(files.id, fileId),
+      });
 
-      if (fileData.length === 0) {
+      if (!file) {
         return {
           status: 404,
           body: {
@@ -79,33 +77,12 @@ const router = s.router(geometryContract, {
         };
       }
 
-      if (fileData.length > 1) {
-        return {
-          status: 500,
-          body: {
-            message: `File id '${fileId}' is ambigous, found more than one result.`,
-          },
-        };
-      }
-
-      const file = fileData[0];
-
-      if (file.status === "in_process") {
+      if (file.status === "in_process" || file.status === "failed") {
         return {
           status: 200,
           body: {
-            status: "IN_PROCESS",
+            status: file.status,
             processingTimeMs: 812,
-          },
-        };
-      }
-
-      if (file.status === "failed") {
-        return {
-          status: 200,
-          body: {
-            status: "FAILED",
-            processingTimeMs: 12487,
           },
         };
       }
@@ -113,7 +90,7 @@ const router = s.router(geometryContract, {
       return {
         status: 200,
         body: {
-          status: "DONE",
+          status: file.status,
           properties: file.geometry || undefined,
           processingTimeMs: 8047,
         },
@@ -138,6 +115,260 @@ const router = s.router(geometryContract, {
         ...material,
         price: Number(material.price),
       })),
+    };
+  },
+  createQuote: async ({ body: { fileId } }) => {
+    try {
+      const file = await db.query.files.findFirst({
+        where: eq(files.id, fileId),
+      });
+
+      if (!file) {
+        return {
+          status: 404,
+          body: {
+            message: `Cannot create quote, because file with id '${fileId}' was not found.`,
+          },
+        };
+      }
+
+      const quotesResult = await db
+        .insert(quotes)
+        .values({
+          fileId,
+          expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+        })
+        .returning({ id: quotes.id });
+
+      return {
+        status: 200,
+        body: { id: quotesResult[0].id },
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        status: 500,
+        body: {
+          message: `Creating quote for file id '${fileId}' failed.`,
+        },
+      };
+    }
+  },
+  getQuote: async ({ params: { id: quoteId } }) => {
+    try {
+      const quote = await db.query.quotes.findFirst({
+        where: eq(quotes.id, quoteId),
+      });
+
+      if (!quote) {
+        return {
+          status: 404,
+          body: {
+            message: `No data for quote with id '${quoteId}' found.`,
+          },
+        };
+      }
+
+      return {
+        status: 200,
+        body: {
+          status: quote.status,
+          id: quote.id,
+          fileId: quote.fileId,
+          createdAt: quote.createdAt.toISOString(),
+          expiresAt: quote.expiresAt.toISOString(),
+          materialId: quote.materialId ?? undefined,
+          materialName: quote.materialName ?? undefined,
+          materialPriceFactor: quote.materialPriceFactor
+            ? Number(quote.materialPriceFactor)
+            : undefined,
+          quantity: quote.quantity ?? undefined,
+          volumeCm3: quote.volumeCm3 ? Number(quote.volumeCm3) : undefined,
+          unitPrice: quote.unitPrice ? Number(quote.unitPrice) : undefined,
+          quantityDiscount: quote.quantityDiscount
+            ? Number(quote.quantityDiscount)
+            : undefined,
+          totalPrice: quote.totalPrice ? Number(quote.totalPrice) : undefined,
+        },
+      };
+    } catch (error) {
+      console.log(error);
+
+      return {
+        status: 500,
+        body: {
+          message: `Fetching data for quote with id '${quoteId}' failed.`,
+        },
+      };
+    }
+  },
+  completeQuote: async ({
+    params: { id: quoteId },
+    body: {
+      materialId,
+      materialName,
+      materialPriceFactor,
+      quantity,
+      quantityDiscount,
+      totalPrice,
+      unitPrice,
+      volumeCm3,
+    },
+  }) => {
+    try {
+      const quotesResult = await db
+        .update(quotes)
+        .set({
+          materialId,
+          materialName,
+          materialPriceFactor: materialPriceFactor.toString(),
+          quantity,
+          quantityDiscount: quantityDiscount.toString(),
+          totalPrice: totalPrice.toString(),
+          unitPrice: unitPrice.toString(),
+          volumeCm3: volumeCm3.toString(),
+          status: "ready",
+        })
+        .where(eq(quotes.id, quoteId))
+        .returning({ id: quotes.id });
+
+      if (quotesResult.length === 0) {
+        return {
+          status: 404,
+          body: {
+            message: `Cannote complete quote with id '${quoteId}', because quote was not found.`,
+          },
+        };
+      }
+
+      return {
+        status: 200,
+        body: { id: quotesResult[0].id },
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        status: 500,
+        body: {
+          message: `Completing quote with id '${quoteId}' failed.`,
+        },
+      };
+    }
+  },
+  createOrder: async ({
+    body: {
+      customerCompany,
+      customerEmail,
+      customerName,
+      paymentMethod,
+      quoteId,
+      totalAmount,
+    },
+  }) => {
+    try {
+      const quote = await db.query.quotes.findFirst({
+        where: eq(quotes.id, quoteId),
+      });
+
+      if (!quote) {
+        return {
+          status: 404,
+          body: {
+            message: `Cannot create order, because quote with id '${quoteId}' was not found.`,
+          },
+        };
+      }
+
+      if (quote.status !== "ready") {
+        return {
+          status: 400,
+          body: {
+            message: `Cannot create order, because quote with id '${quoteId}' is not in 'ready' state. Quote is currently in '${quote.status}' state.`,
+          },
+        };
+      }
+
+      const orderId = await db.transaction(async () => {
+        const ordersResult = await db
+          .insert(orders)
+          .values({
+            quoteId,
+            customerName,
+            customerEmail,
+            customerCompany,
+            paymentMethod,
+            totalAmount: totalAmount.toString(),
+          })
+          .returning({ id: orders.id });
+
+        await db
+          .update(quotes)
+          .set({
+            status: "ordered",
+          })
+          .where(eq(quotes.id, quoteId));
+
+        return ordersResult[0].id;
+      });
+
+      return {
+        status: 200,
+        body: { id: orderId },
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        status: 500,
+        body: {
+          message: `Creating order for quote '${quoteId}' failed.`,
+        },
+      };
+    }
+  },
+  getOrder: async ({ params: { id: orderId } }) => {
+    try {
+      const order = await db.query.orders.findFirst({
+        where: eq(orders.id, orderId),
+      });
+
+      if (!order) {
+        return {
+          status: 404,
+          body: {
+            message: `Order with id '${orderId}' was not found.`,
+          },
+        };
+      }
+
+      return {
+        status: 200,
+        body: {
+          id: order.id,
+          createdAt: order.createdAt.toISOString(),
+          currency: order.currency,
+          customerCompany: order.customerCompany ?? undefined,
+          customerEmail: order.customerEmail,
+          customerName: order.customerName,
+          paymentMethod: order.paymentMethod,
+          paymentStatus: order.paymentStatus,
+          quoteId: order.quoteId,
+          totalAmount: Number(order.totalAmount),
+        },
+      };
+    } catch (error) {
+      console.log(error);
+      return {
+        status: 500,
+        body: {
+          message: `Getting details for order with id '${orderId}' failed.`,
+        },
+      };
+    }
+  },
+  processPayment: async () => {
+    return {
+      status: 200,
+      body: { id: "fooo" },
     };
   },
 });

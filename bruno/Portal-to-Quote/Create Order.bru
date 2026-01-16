@@ -1,0 +1,26 @@
+meta {
+  name: Create Order
+  type: http
+  seq: 6
+}
+
+post {
+  url: {{base_url}}/api/orders
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "customerCompany": "Test Company",
+    "customerEmail": "felix.abc@example.com",
+    "customerName": "Felix",
+    "paymentMethod": "card",
+    "quoteId": "{{quote_id}}",
+    "totalAmount": 11032.32
+  }
+}
+
+vars:post-response {
+  order_id: res.body.id
+}

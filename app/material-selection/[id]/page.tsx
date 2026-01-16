@@ -2,7 +2,6 @@ import Heading1 from "../../components/heading1";
 import Quote from "../../components/quote";
 import { Suspense } from "react";
 import { apiClient } from "@/shared/client";
-import { waitUntilGeometryDataIsAvailable } from "@/app/actions";
 
 export interface Material {
   name: string;
@@ -38,11 +37,11 @@ export default async function MaterialSelectionPage({
         throw new Error(geometryResponse.body.message);
       }
 
-      if (geometryResponse.body.status === "FAILED") {
+      if (geometryResponse.body.status === "failed") {
         throw new Error("Geometry data processing failed.");
       }
 
-      if (geometryResponse.body.status === "DONE") {
+      if (geometryResponse.body.status === "done") {
         return geometryResponse.body;
       }
 

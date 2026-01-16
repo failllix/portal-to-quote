@@ -1,4 +1,5 @@
 import { relations } from "drizzle-orm";
+import { datetime } from "drizzle-orm/mysql-core";
 import {
   pgTable,
   uuid,
@@ -70,23 +71,26 @@ export const quotes = pgTable("quotes", {
   fileId: uuid("file_id")
     .notNull()
     .references(() => files.id),
-  materialId: text("material_id").notNull(),
-  materialName: text("material_name").notNull(),
+  materialId: text("material_id"),
+  materialName: text("material_name"),
   materialPriceFactor: decimal("material_price_factor", {
     precision: 10,
     scale: 4,
-  }).notNull(),
-  quantity: integer("quantity").notNull(),
-  volumeCm3: decimal("volume_cm3", { precision: 10, scale: 3 }).notNull(),
-  unitPrice: decimal("unit_price", { precision: 10, scale: 2 }).notNull(),
+  }),
+  quantity: integer("quantity"),
+  volumeCm3: decimal("volume_cm3", { precision: 10, scale: 3 }),
+  unitPrice: decimal("unit_price", { precision: 10, scale: 2 }),
   quantityDiscount: decimal("quantity_discount", {
     precision: 10,
     scale: 2,
-  }).notNull(),
-  totalPrice: decimal("total_price", { precision: 10, scale: 2 }).notNull(),
+  }),
+  totalPrice: decimal("total_price", { precision: 10, scale: 2 }),
   status: quoteStatusEnum("status").notNull().default("draft"),
-  createdAt: timestamp("created_at").defaultNow().notNull(),
-  expiresAt: timestamp("expires_at").notNull(),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+  expiresAt: timestamp("expires_at", {
+    withTimezone: true,
+    mode: "date",
+  }).notNull(),
 });
 
 export const orders = pgTable("orders", {
@@ -97,13 +101,12 @@ export const orders = pgTable("orders", {
   customerName: text("customer_name").notNull(),
   customerEmail: text("customer_email").notNull(),
   customerCompany: text("customer_company"),
-
   paymentMethod: paymentMethodEnum("payment_method").notNull(),
   paymentStatus: paymentStatusEnum("payment_status")
-    .notNull()
-    .default("pending"),
+    .default("pending")
+    .notNull(),
   totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
-  currency: varchar("currency", { length: 3 }).notNull().default("EUR"),
+  currency: varchar("currency", { length: 3 }).default("EUR").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

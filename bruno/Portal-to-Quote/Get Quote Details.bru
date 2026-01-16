@@ -1,0 +1,17 @@
+meta {
+  name: Get Quote Details
+  type: http
+  seq: 4
+}
+
+get {
+  url: {{base_url}}/api/quotes/{{quote_id}}
+  body: none
+  auth: inherit
+}
+
+body:json {
+  {
+    "fileId": "{{file_id}}"
+  }
+}

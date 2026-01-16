@@ -1,0 +1,28 @@
+meta {
+  name: Complete Quote
+  type: http
+  seq: 5
+}
+
+post {
+  url: {{base_url}}/api/quotes/{{quote_id}}/complete
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "materialId": "pla",
+    "materialName": "PLA",
+    "materialPriceFactor": 0.12,
+    "quantity": 14,
+    "quantityDiscount": 0.1,
+    "totalPrice": 337.82,
+    "unitPrice": 24.13,
+    "volumeCm3": 2402.09
+  }
+}
+
+vars:post-response {
+  quote_id: res.body.id
+}

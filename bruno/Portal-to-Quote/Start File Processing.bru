@@ -1,7 +1,7 @@
 meta {
   name: Start File Processing
   type: http
-  seq: 3
+  seq: 1
 }
 
 post {
@@ -12,10 +12,14 @@ post {
 
 body:json {
   {
-    "id": "{{file_id}}",
+    "id": "{{$randomUUID}}",
     "mimeType": "text/plain",
     "originalName": "dummy-file.step",
     "sizeBytes": 18000,
-    "storagePath": "stepFiles/{{file_id}}"
+    "storagePath": "stepFiles/{{$randomUUID}}"
   }
+}
+
+vars:post-response {
+  file_id: res.body.id
 }
