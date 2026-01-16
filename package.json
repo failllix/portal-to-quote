@@ -5,6 +5,7 @@
   "scripts": {
     "install-all": "find . -name 'node_modules' -prune -o -name '.next' -prune -o -name 'package.json' -type f -execdir sh -c 'echo Installing dependencies in: $(pwd) && npm ci' \\;",
     "supabase": "supabase start",
+    "supabase-seed": "supabase seed buckets",
     "services": "docker compose up --build",
     "dev": "concurrently --names 'supabase,services' 'npm run supabase' 'npm run services' ",
     "dev-frontend": "next dev",
