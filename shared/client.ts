@@ -6,9 +6,10 @@ export const apiClient = initClient(geometryContract, {
   baseHeaders: {},
   throwOnUnknownStatus: true,
   api: async (args: ApiFetcherArgs) => {
+    const { signal } = new AbortController();
     const result = await tsRestFetchApi({
       ...args,
-      fetchOptions: { cache: "no-store" },
+      fetchOptions: { cache: "no-store", signal },
     });
     return result;
   },

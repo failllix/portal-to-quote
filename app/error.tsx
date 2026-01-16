@@ -10,17 +10,13 @@ export default function GlobalError({
   reset: () => void;
 }) {
   return (
-    <html lang="en" className="h-full">
-      <body className="h-full p-8 text-center">
-        <div className="h-full flex flex-col gap-8 items-center justify-center">
-          <Heading1>Something went wrong!</Heading1>
-          <p>{error.message}</p>
-          {error.digest && <p>{error.digest}</p>}
-          <Button type="reset" onClick={() => reset()}>
-            Try again
-          </Button>
-        </div>
-      </body>
-    </html>
+    <div className="h-full flex flex-col gap-8 items-center justify-center">
+      <Heading1>Something went wrong!</Heading1>
+      <p>{error.message}</p>
+      {error.digest && <p>{error.digest}</p>}
+      <Button type="reset" onClick={() => reset()}>
+        Try again
+      </Button>
+    </div>
   );
 }

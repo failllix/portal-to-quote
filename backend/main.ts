@@ -41,10 +41,9 @@ const router = s.router(geometryContract, {
             },
           })
           .where(eq(files.id, id));
-      }, 10_000);
+      }, 7_000);
     } catch (error) {
       console.error(error);
-
       return {
         status: 500,
         body: {
@@ -135,7 +134,7 @@ const router = s.router(geometryContract, {
 
     return {
       status: 200,
-      body: materialsResult.map(material => ({
+      body: materialsResult.map((material) => ({
         ...material,
         price: Number(material.price),
       })),

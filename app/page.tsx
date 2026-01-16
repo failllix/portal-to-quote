@@ -5,6 +5,7 @@ import { type ChangeEvent, useEffect, useRef, useState } from "react";
 import Button from "./components/button";
 import Heading1 from "./components/heading1";
 import { uploadFile } from "./actions";
+import { useRouter } from "next/navigation";
 
 interface DropZoneText {
   text: string;
@@ -12,6 +13,8 @@ interface DropZoneText {
 }
 
 export default function Home() {
+  const router = useRouter();
+
   const dropZoneDefaultText =
     "Drop your .step or .stp file here, or click to upload.";
   const [dropZoneText, setDropZoneText] = useState<DropZoneText>({
@@ -31,7 +34,7 @@ export default function Home() {
 
     const result = await uploadFile(formData);
 
-    console.log(result);
+    router.push(`/material-selection/${result.id}`);
   }
 
   function validateAndUpdateSelectedFiles(file: File) {

@@ -9,11 +9,15 @@ import Button from "./button";
 import Heading2 from "./heading2";
 import MaterialSelection from "./materials-selection";
 
-import type { geometryContract } from "@/shared/contract";
-import type { ClientInferResponses } from "@ts-rest/core";
+import { geometryContract } from "@/shared/contract";
+import type {
+  ClientInferResponses,
+  ClientInferResponseBody,
+} from "@ts-rest/core";
 
-type GeometryPromise = ClientInferResponses<
-  typeof geometryContract.getGeometryResult
+type GeometryPromise = ClientInferResponseBody<
+  typeof geometryContract.getGeometryResult,
+  200
 >;
 type MaterialsPromise = ClientInferResponses<
   typeof geometryContract.getMaterials
@@ -26,17 +30,7 @@ export default function Quote({
   geometryRequest: Promise<GeometryPromise>;
   materialsRequest: Promise<MaterialsPromise>;
 }) {
-  const geometryResponse = use(geometryRequest);
-
-  if (geometryResponse.status === 404) {
-    throw new Error(geometryResponse.body.message);
-  }
-
-  if (geometryResponse.status === 500) {
-    throw new Error(geometryResponse.body.message);
-  }
-
-  const geometryResult = geometryResponse.body;
+  const geometryResult = use(geometryRequest);
 
   if (!geometryResult?.properties) {
     throw new Error("Geometry data is missing");
