@@ -8,12 +8,12 @@
     "dev-backend": "nodemon --watch ./backend --watch ./shared --ext ts --exec tsx ./backend/main.ts",
     "dev-frontend": "next dev",
     "format": "biome format --write",
-    "install-all": "find . -name 'node_modules' -prune -o -name '.next' -prune -o -name 'package.json' -type f -execdir sh -c 'echo Installing dependencies in: $(pwd) && npm ci' \\;",
     "lint": "biome check",
     "services": "docker compose up --build",
     "start": "next start",
     "supabase": "supabase start",
-    "supabase-seed": "supabase seed buckets"
+    "supabase-seed": "supabase seed buckets",
+    "db-update": "drizzle-kit push && tsx ./db/seed.ts"
   },
   "dependencies": {
     "@supabase/supabase-js": "2.90.1",
