@@ -3,13 +3,11 @@ import { z } from "zod";
 
 const contract = initContract();
 
-const FileUploadResult = z.object({
-  id: z.string(),
-});
+const fileProcessingEnum = z.enum(["IN_PROCESS", "DONE", "FAILED"]);
 
 const FileProcessingResult = z.object({
   id: z.string(),
-  status: z.enum(["IN_PROCESS"]),
+  status: fileProcessingEnum,
 });
 
 const GeometryProperties = z.object({
@@ -24,8 +22,8 @@ const GeometryProperties = z.object({
 });
 
 const GeometryResult = z.object({
-  success: z.boolean(),
-  properties: GeometryProperties,
+  status: fileProcessingEnum,
+  properties: GeometryProperties.optional(),
   processingTimeMs: z.number(),
 });
 
@@ -44,18 +42,6 @@ const ErrorResult = z.object({
 });
 
 export const geometryContract = contract.router({
-  uploadFile: {
-    method: "POST",
-    path: "/api/files/upload",
-    contentType: "multipart/form-data",
-    body: z.custom<File>(),
-    responses: {
-      400: ErrorResult,
-      202: FileUploadResult,
-    },
-    summary: "Upload a CAD file for async processing",
-    strictStatusCodes: true,
-  },
   startFileProcessing: {
     method: "POST",
     path: "/api/files/startProcessing",
@@ -79,6 +65,7 @@ export const geometryContract = contract.router({
     responses: {
       200: GeometryResult,
       404: ErrorResult,
+      500: ErrorResult,
     },
     summary: "Result of the geometry extraction service",
     strictStatusCodes: true,

@@ -32,7 +32,17 @@ export default function Quote({
     throw new Error(geometryResponse.body.message);
   }
 
+  if (geometryResponse.status === 500) {
+    throw new Error(geometryResponse.body.message);
+  }
+
   const geometryResult = geometryResponse.body;
+
+  if (!geometryResult?.properties) {
+    throw new Error("Geometry data is missing");
+  }
+
+  const geometryProperties = geometryResult.properties;
 
   const materialsResponse = use(materialsRequest);
 
@@ -77,12 +87,12 @@ export default function Quote({
   useEffect(() => {
     setPriceDetails(
       calculatePriceDetails({
-        volumeCm3: geometryResult.properties.volumeCm3,
+        volumeCm3: geometryProperties.volumeCm3,
         materialPrice: materials[selectedMaterialIndex].price,
         quantity,
       })
     );
-  }, [quantity, selectedMaterialIndex, geometryResult, materials]);
+  }, [quantity, selectedMaterialIndex, geometryProperties, materials]);
 
   return (
     <div className="flex gap-8 mt-8">
@@ -111,9 +121,7 @@ export default function Quote({
             <tbody>
               <tr>
                 <td>Volume</td>
-                <td className="pl-2">
-                  {geometryResult.properties.volumeCm3}cm³
-                </td>
+                <td className="pl-2">{geometryProperties.volumeCm3}cm³</td>
               </tr>
               <tr>
                 <td>Material</td>

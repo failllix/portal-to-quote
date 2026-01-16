@@ -29,6 +29,12 @@ export const paymentStatusEnum = pgEnum("payment_status", [
   "failed",
 ]);
 
+export const fileProcessingStatusEnum = pgEnum("file_status", [
+  "in_process",
+  "done",
+  "failed",
+]);
+
 interface GeometryProperties {
   boundingBox: {
     x: number;
@@ -56,6 +62,7 @@ export const files = pgTable("files", {
   mimeType: varchar("mime_type", { length: 255 }).notNull(),
   geometry: jsonb("geometry").$type<GeometryProperties | null>(),
   uploadedAt: timestamp("uploaded_at").defaultNow().notNull(),
+  status: fileProcessingStatusEnum("status").notNull().default("in_process"),
 });
 
 export const quotes = pgTable("quotes", {

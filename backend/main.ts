@@ -1,8 +1,7 @@
 import { createExpressEndpoints, initServer } from "@ts-rest/express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import express, { Request } from "express";
-import multer from "multer";
+import express from "express";
 import { geometryContract } from "../shared/contract";
 import { db } from "../db/db";
 import { files } from "../db/schema";
@@ -14,43 +13,9 @@ app.use(cors());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-const upload = multer({ dest: "uploads/" });
-
 const s = initServer();
 
 const router = s.router(geometryContract, {
-  uploadFile: {
-    middleware: [upload.single("file")],
-    handler: async ({ req }: { req: Request }) => {
-      const file = req.file;
-
-      if (
-        !file?.originalname.endsWith(".step") ||
-        file?.originalname.endsWith(".stp")
-      ) {
-        return {
-          status: 400,
-          body: {
-            message: "File must be of type .step or .stp",
-          },
-        };
-      }
-
-      if (file.size > 50_000_000) {
-        return {
-          status: 400,
-          body: {
-            message: "File must be smaller than 50MB",
-          },
-        };
-      }
-
-      return {
-        status: 202,
-        body: { id: crypto.randomUUID() },
-      };
-    },
-  },
   startFileProcessing: async ({
     body: { id, mimeType, originalName, sizeBytes, storagePath },
   }) => {
@@ -67,6 +32,7 @@ const router = s.router(geometryContract, {
         await db
           .update(files)
           .set({
+            status: "done",
             geometry: {
               boundingBox: { x: 250, y: 250, z: 45 },
               volume: 2812500,
@@ -96,21 +62,73 @@ const router = s.router(geometryContract, {
     };
   },
   getGeometryResult: async ({ params }) => {
-    console.log("Returning geometry data for file with id", params.id);
+    const fileId = params.id;
+    console.log("Returning geometry data for file with id", fileId);
 
-    return {
-      status: 200,
-      body: {
-        success: true,
-        properties: {
-          boundingBox: { x: 250, y: 250, z: 45 },
-          volume: 2812500,
-          volumeCm3: 2812.5,
-          surfaceArea: 486000,
+    try {
+      const fileData = await db
+        .select()
+        .from(files)
+        .where(eq(files.id, fileId));
+
+      if (fileData.length === 0) {
+        return {
+          status: 404,
+          body: {
+            message: `No data for file with id '${fileId}' found.`,
+          },
+        };
+      }
+
+      if (fileData.length > 1) {
+        return {
+          status: 500,
+          body: {
+            message: `File id '${fileId}' is ambigous, found more than one result.`,
+          },
+        };
+      }
+
+      const file = fileData[0];
+
+      if (file.status === "in_process") {
+        return {
+          status: 200,
+          body: {
+            status: "IN_PROCESS",
+            processingTimeMs: 812,
+          },
+        };
+      }
+
+      if (file.status === "failed") {
+        return {
+          status: 200,
+          body: {
+            status: "FAILED",
+            processingTimeMs: 12487,
+          },
+        };
+      }
+
+      return {
+        status: 200,
+        body: {
+          status: "DONE",
+          properties: file.geometry || undefined,
+          processingTimeMs: 8047,
         },
-        processingTimeMs: 8047,
-      },
-    };
+      };
+    } catch (error) {
+      console.log(error);
+
+      return {
+        status: 500,
+        body: {
+          message: `Fetching data for file with id '${fileId}' failed.`,
+        },
+      };
+    }
   },
   getMaterials: async () => {
     return {
