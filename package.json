@@ -16,6 +16,8 @@
     "db-update": "drizzle-kit push && tsx ./db/seed.ts"
   },
   "dependencies": {
+    "@stripe/react-stripe-js": "5.4.1",
+    "@stripe/stripe-js": "8.6.1",
     "@supabase/supabase-js": "2.90.1",
     "@ts-rest/core": "3.52.1",
     "@ts-rest/express": "3.52.1",
@@ -28,7 +30,8 @@
     "next": "16.1.2",
     "postgres": "3.4.8",
     "react": "19.2.3",
-    "react-dom": "19.2.3"
+    "react-dom": "19.2.3",
+    "stripe": "20.1.2"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",

@@ -15,6 +15,7 @@ import type {
   ClientInferResponses,
 } from "@ts-rest/core";
 import { completeQuote } from "../actions";
+import { useRouter } from "next/navigation";
 
 type GeometryPromise = ClientInferResponseBody<
   typeof geometryContract.getGeometryResult,
@@ -33,6 +34,7 @@ export default function Quote({
   materialsRequest: Promise<MaterialsPromise>;
   quoteId: string;
 }) {
+  const router = useRouter();
   const geometryResult = use(geometryRequest);
 
   if (!geometryResult?.properties) {
@@ -64,6 +66,8 @@ export default function Quote({
       quantity,
       volumeCm3: geometryProperties.volumeCm3,
     });
+
+    router.push(`/order/${quoteId}`);
   }
 
   function increaseQuantity() {

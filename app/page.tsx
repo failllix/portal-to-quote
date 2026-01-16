@@ -132,7 +132,7 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="px-12 mx-auto max-w-300 mt-12">
+    <main className="px-12 mx-auto max-w-300">
       <Heading1>File upload</Heading1>
       <label
         ref={dropZoneRef}

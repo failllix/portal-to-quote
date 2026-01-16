@@ -64,7 +64,7 @@ export default async function MaterialSelectionPage({
   }
 
   return (
-    <main className="px-12 mx-auto max-w-300 mt-12">
+    <main className="px-12 mx-auto max-w-300">
       <Heading1>Material Selection</Heading1>
       <Suspense fallback={<div>Analyzing geometry...</div>}>
         <Quote

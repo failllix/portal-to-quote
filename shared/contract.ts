@@ -3,7 +3,6 @@ import { z } from "zod";
 
 const contract = initContract();
 
-const fileProcessingEnum = z.enum(["in_process", "done", "failed"]);
 const paymentMethodEnum = z.enum(["card", "purchase_order"]);
 const paymentStatusEnum = z.enum(["pending", "paid", "failed"]);
 
@@ -17,7 +16,7 @@ const FileProcessingBody = z.object({
 
 const FileProcessingResult = z.object({
   id: z.string(),
-  status: fileProcessingEnum,
+  status: z.literal("in_process"),
 });
 
 const GeometryProperties = z.object({
@@ -31,11 +30,17 @@ const GeometryProperties = z.object({
   surfaceArea: z.number(),
 });
 
-const GeometryResult = z.object({
-  status: fileProcessingEnum,
-  properties: GeometryProperties.optional(),
-  processingTimeMs: z.number(),
-});
+const GeometryResult = z.discriminatedUnion("status", [
+  z.object({
+    status: z.enum(["in_process", "failed"]),
+    processingTimeMs: z.number(),
+  }),
+  z.object({
+    status: z.literal("done"),
+    properties: GeometryProperties,
+    processingTimeMs: z.number(),
+  }),
+]);
 
 const MaterialsResult = z.array(
   z.object({
@@ -66,21 +71,45 @@ const QuoteCreationResult = z.object({
   id: z.string(),
 });
 
-const QuoteResult = z.object({
-  id: z.string(),
-  fileId: z.string(),
-  materialId: z.string().optional(),
-  materialName: z.string().optional(),
-  materialPriceFactor: z.number().optional(),
-  quantity: z.number().optional(),
-  volumeCm3: z.number().optional(),
-  unitPrice: z.number().optional(),
-  quantityDiscount: z.number().optional(),
-  totalPrice: z.number().optional(),
-  status: z.string(),
-  createdAt: z.string().datetime(),
-  expiresAt: z.string().datetime(),
-});
+const QuoteResult = z.discriminatedUnion("status", [
+  z.object({
+    status: z.enum(["draft"]),
+    id: z.string(),
+    fileId: z.string(),
+    createdAt: z.string().datetime(),
+    expiresAt: z.string().datetime(),
+  }),
+  z.object({
+    status: z.enum(["ready", "ordered"]),
+    id: z.string(),
+    fileId: z.string(),
+    materialId: z.string(),
+    materialName: z.string(),
+    materialPriceFactor: z.number(),
+    quantity: z.number(),
+    volumeCm3: z.number(),
+    unitPrice: z.number(),
+    quantityDiscount: z.number(),
+    totalPrice: z.number(),
+    createdAt: z.string().datetime(),
+    expiresAt: z.string().datetime(),
+  }),
+  z.object({
+    status: z.enum(["expired"]),
+    id: z.string(),
+    fileId: z.string(),
+    materialId: z.string().optional(),
+    materialName: z.string().optional(),
+    materialPriceFactor: z.number().optional(),
+    quantity: z.number().optional(),
+    volumeCm3: z.number().optional(),
+    unitPrice: z.number().optional(),
+    quantityDiscount: z.number().optional(),
+    totalPrice: z.number().optional(),
+    createdAt: z.string().datetime(),
+    expiresAt: z.string().datetime(),
+  }),
+]);
 
 const OrderCreationBody = z.object({
   quoteId: z.string(),

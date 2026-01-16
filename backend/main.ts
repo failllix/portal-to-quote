@@ -77,24 +77,30 @@ const router = s.router(geometryContract, {
         };
       }
 
-      if (file.status === "in_process" || file.status === "failed") {
-        return {
-          status: 200,
-          body: {
-            status: file.status,
-            processingTimeMs: 812,
-          },
-        };
-      }
+      switch (file.status) {
+        case "in_process":
+        case "failed":
+          return {
+            status: 200,
+            body: {
+              status: file.status,
+              processingTimeMs: 812,
+            },
+          };
+        case "done":
+          if (file.geometry === null) {
+            throw new Error("Geometry data is missing unexpectedly for file");
+          }
 
-      return {
-        status: 200,
-        body: {
-          status: file.status,
-          properties: file.geometry || undefined,
-          processingTimeMs: 8047,
-        },
-      };
+          return {
+            status: 200,
+            body: {
+              status: file.status,
+              properties: file.geometry,
+              processingTimeMs: 8047,
+            },
+          };
+      }
     } catch (error) {
       console.log(error);
 
@@ -169,6 +175,55 @@ const router = s.router(geometryContract, {
         };
       }
 
+      if (quote.status === "draft") {
+        return {
+          status: 200,
+          body: {
+            status: quote.status,
+            id: quote.id,
+            fileId: quote.fileId,
+            createdAt: quote.createdAt.toISOString(),
+            expiresAt: quote.expiresAt.toISOString(),
+          },
+        };
+      }
+
+      if (quote.status === "expired") {
+        return {
+          status: 200,
+          body: {
+            status: quote.status,
+            id: quote.id,
+            fileId: quote.fileId,
+            createdAt: quote.createdAt.toISOString(),
+            expiresAt: quote.expiresAt.toISOString(),
+            materialId: quote.materialId ?? undefined,
+            materialName: quote.materialName ?? undefined,
+            materialPriceFactor: quote.materialPriceFactor
+              ? Number(quote.materialPriceFactor)
+              : undefined,
+            quantity: quote.quantity ?? undefined,
+            volumeCm3: quote.volumeCm3 ? Number(quote.volumeCm3) : undefined,
+            unitPrice: quote.unitPrice ? Number(quote.unitPrice) : undefined,
+            quantityDiscount: quote.quantityDiscount
+              ? Number(quote.quantityDiscount)
+              : undefined,
+            totalPrice: quote.totalPrice ? Number(quote.totalPrice) : undefined,
+          },
+        };
+      }
+
+      if (
+        quote.materialId === null ||
+        quote.materialName === null ||
+        quote.quantity === null ||
+        quote.volumeCm3 === null ||
+        quote.quantityDiscount === null ||
+        quote.totalPrice === null
+      ) {
+        throw new Error("Properties are unexpectedly missing.");
+      }
+
       return {
         status: 200,
         body: {
@@ -177,18 +232,14 @@ const router = s.router(geometryContract, {
           fileId: quote.fileId,
           createdAt: quote.createdAt.toISOString(),
           expiresAt: quote.expiresAt.toISOString(),
-          materialId: quote.materialId ?? undefined,
-          materialName: quote.materialName ?? undefined,
-          materialPriceFactor: quote.materialPriceFactor
-            ? Number(quote.materialPriceFactor)
-            : undefined,
-          quantity: quote.quantity ?? undefined,
-          volumeCm3: quote.volumeCm3 ? Number(quote.volumeCm3) : undefined,
-          unitPrice: quote.unitPrice ? Number(quote.unitPrice) : undefined,
-          quantityDiscount: quote.quantityDiscount
-            ? Number(quote.quantityDiscount)
-            : undefined,
-          totalPrice: quote.totalPrice ? Number(quote.totalPrice) : undefined,
+          materialId: quote.materialId,
+          materialName: quote.materialName,
+          materialPriceFactor: Number(quote.materialPriceFactor),
+          quantity: quote.quantity,
+          volumeCm3: Number(quote.volumeCm3),
+          unitPrice: Number(quote.unitPrice),
+          quantityDiscount: Number(quote.quantityDiscount),
+          totalPrice: Number(quote.totalPrice),
         },
       };
     } catch (error) {
