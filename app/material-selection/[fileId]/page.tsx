@@ -16,9 +16,21 @@ export type GetGeometryResult = ReturnType<typeof apiClient.getGeometryResult>;
 export default async function MaterialSelectionPage({
   params,
 }: {
-  params: { id: string };
+  params: { fileId: string };
 }) {
-  const { id } = await params;
+  const { fileId } = await params;
+
+  const quoteCreationResult = await apiClient.createQuote({
+    body: {
+      fileId,
+    },
+  });
+
+  if (quoteCreationResult.status !== 200) {
+    throw new Error(quoteCreationResult.body.message);
+  }
+
+  const quoteId = quoteCreationResult.body.id;
 
   const materialsRequest = apiClient.getMaterials();
 
@@ -29,7 +41,7 @@ export default async function MaterialSelectionPage({
     while (Date.now() < startTime + timeOut) {
       const geometryResponse = await apiClient.getGeometryResult({
         params: {
-          id,
+          id: fileId,
         },
       });
 
@@ -56,6 +68,7 @@ export default async function MaterialSelectionPage({
       <Heading1>Material Selection</Heading1>
       <Suspense fallback={<div>Analyzing geometry...</div>}>
         <Quote
+          quoteId={quoteId}
           geometryRequest={waitUntilGeometryDataIsAvailable()}
           materialsRequest={materialsRequest}
         ></Quote>

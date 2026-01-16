@@ -181,6 +181,7 @@ export const geometryContract = contract.router({
     body: QuoteCompletionBody,
     responses: {
       200: QuoteCreationResult,
+      400: ErrorResult,
       404: ErrorResult,
       500: ErrorResult,
     },

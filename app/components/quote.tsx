@@ -9,11 +9,12 @@ import Button from "./button";
 import Heading2 from "./heading2";
 import MaterialSelection from "./materials-selection";
 
-import { geometryContract } from "@/shared/contract";
+import type { geometryContract } from "@/shared/contract";
 import type {
-  ClientInferResponses,
   ClientInferResponseBody,
+  ClientInferResponses,
 } from "@ts-rest/core";
+import { completeQuote } from "../actions";
 
 type GeometryPromise = ClientInferResponseBody<
   typeof geometryContract.getGeometryResult,
@@ -26,9 +27,11 @@ type MaterialsPromise = ClientInferResponses<
 export default function Quote({
   geometryRequest,
   materialsRequest,
+  quoteId,
 }: {
   geometryRequest: Promise<GeometryPromise>;
   materialsRequest: Promise<MaterialsPromise>;
+  quoteId: string;
 }) {
   const geometryResult = use(geometryRequest);
 
@@ -46,6 +49,22 @@ export default function Quote({
   const [quantity, setQuantity] = useState(1);
   const [selectedMaterialIndex, setSelectedMaterial] = useState(0);
   const [priceDetails, setPriceDetails] = useState<PriceDetails | undefined>();
+
+  async function finishQuote() {
+    if (!priceDetails) {
+      throw new Error("Price calculation failed.");
+    }
+
+    const material = materials[selectedMaterialIndex];
+
+    await completeQuote({
+      material,
+      quoteId,
+      priceDetails,
+      quantity,
+      volumeCm3: geometryProperties.volumeCm3,
+    });
+  }
 
   function increaseQuantity() {
     setQuantity(quantity + 1);
@@ -154,6 +173,14 @@ export default function Quote({
             </tbody>
           </table>
         </div>
+        <Button
+          type="button"
+          className="mt-8"
+          disabled={quantity < 1}
+          onClick={finishQuote}
+        >
+          Order now
+        </Button>
       </div>
       <div className="grow">
         <MaterialSelection

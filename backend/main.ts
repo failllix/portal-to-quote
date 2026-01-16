@@ -216,7 +216,29 @@ const router = s.router(geometryContract, {
     },
   }) => {
     try {
-      const quotesResult = await db
+      const quote = await db.query.quotes.findFirst({
+        where: eq(quotes.id, quoteId),
+      });
+
+      if (!quote) {
+        return {
+          status: 404,
+          body: {
+            message: `Cannot complete quote, because quote with id '${quoteId}' was not found.`,
+          },
+        };
+      }
+
+      if (quote.status !== "draft") {
+        return {
+          status: 400,
+          body: {
+            message: `Cannot complete quote, because quote with id '${quoteId}' is no longer in 'draft' state. Quote is already in '${quote.status}' state.`,
+          },
+        };
+      }
+
+      await db
         .update(quotes)
         .set({
           materialId,
@@ -229,21 +251,11 @@ const router = s.router(geometryContract, {
           volumeCm3: volumeCm3.toString(),
           status: "ready",
         })
-        .where(eq(quotes.id, quoteId))
-        .returning({ id: quotes.id });
-
-      if (quotesResult.length === 0) {
-        return {
-          status: 404,
-          body: {
-            message: `Cannote complete quote with id '${quoteId}', because quote was not found.`,
-          },
-        };
-      }
+        .where(eq(quotes.id, quoteId));
 
       return {
         status: 200,
-        body: { id: quotesResult[0].id },
+        body: { id: quoteId },
       };
     } catch (error) {
       console.log(error);
