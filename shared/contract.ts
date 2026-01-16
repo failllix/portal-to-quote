@@ -7,6 +7,11 @@ const FileUploadResult = z.object({
   id: z.string(),
 });
 
+const FileProcessingResult = z.object({
+  id: z.string(),
+  status: z.enum(["IN_PROCESS"]),
+});
+
 const GeometryProperties = z.object({
   boundingBox: z.object({
     x: z.number(),
@@ -47,6 +52,23 @@ export const geometryContract = contract.router({
     responses: {
       400: ErrorResult,
       202: FileUploadResult,
+    },
+    summary: "Upload a CAD file for async processing",
+    strictStatusCodes: true,
+  },
+  startFileProcessing: {
+    method: "POST",
+    path: "/api/files/startProcessing",
+    body: z.object({
+      id: z.string(),
+      originalName: z.string(),
+      storagePath: z.string(),
+      sizeBytes: z.number(),
+      mimeType: z.string(),
+    }),
+    responses: {
+      500: ErrorResult,
+      202: FileProcessingResult,
     },
     summary: "Upload a CAD file for async processing",
     strictStatusCodes: true,

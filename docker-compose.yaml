@@ -9,13 +9,10 @@ services:
     volumes:
       - ./backend:/app/backend
       - ./shared:/app/shared
-      - /app/backend/node_modules
-      - /app/shared/node_modules
+      - /app/node_modules
     environment:
-      - PORT=3333
       - DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:54322/postgres
       - SUPABASE_URL=http://host.docker.internal:54321
-      - SUPABASE_SERVICE_KEY=your_local_service_role_key_here
     extra_hosts:
       - "host.docker.internal:host-gateway"
 
@@ -29,10 +26,10 @@ services:
     volumes:
       - .:/app
       - /app/node_modules
-      - /app/shared/node_modules
       - /app/.next
     environment:
       - BACKEND_API_BASE_URL=http://host.docker.internal:3333
+      - NEXT_PUBLIC_SUPABASE_URL=http://host.docker.internal:54321
     depends_on:
       - backend
     extra_hosts:

@@ -8,12 +8,6 @@ COPY package*.json ./
 
 RUN npm ci
 
-COPY shared/package*.json ./shared/
-
-WORKDIR /app/shared
-
-RUN npm ci
-
 WORKDIR /app
 
 COPY . .

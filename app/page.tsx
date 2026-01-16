@@ -4,6 +4,7 @@ import type React from "react";
 import { type ChangeEvent, useEffect, useRef, useState } from "react";
 import Button from "./components/button";
 import Heading1 from "./components/heading1";
+import { uploadFile } from "./actions";
 
 interface DropZoneText {
   text: string;
@@ -19,6 +20,19 @@ export default function Home() {
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const dropZoneRef = useRef<HTMLLabelElement>(null);
+
+  async function handleUpload() {
+    if (selectedFile === null) {
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", selectedFile);
+
+    const result = await uploadFile(formData);
+
+    console.log(result);
+  }
 
   function validateAndUpdateSelectedFiles(file: File) {
     setSelectedFile(null);
@@ -140,6 +154,7 @@ export default function Home() {
         <Button
           type="button"
           disabled={selectedFile == null || dropZoneText.isError}
+          onClick={handleUpload}
         >
           Configure Materials
         </Button>

@@ -1,9 +1,12 @@
 import { createExpressEndpoints, initServer } from "@ts-rest/express";
 import bodyParser from "body-parser";
 import cors from "cors";
-import express from "express";
+import express, { Request } from "express";
 import multer from "multer";
-import { geometryContract } from "@/shared/contract";
+import { geometryContract } from "../shared/contract";
+import { db } from "../db/db";
+import { files } from "../db/schema";
+import { eq } from "drizzle-orm";
 
 const app = express();
 
@@ -18,7 +21,7 @@ const s = initServer();
 const router = s.router(geometryContract, {
   uploadFile: {
     middleware: [upload.single("file")],
-    handler: async ({ req }) => {
+    handler: async ({ req }: { req: Request }) => {
       const file = req.file;
 
       if (
@@ -47,6 +50,50 @@ const router = s.router(geometryContract, {
         body: { id: crypto.randomUUID() },
       };
     },
+  },
+  startFileProcessing: async ({
+    body: { id, mimeType, originalName, sizeBytes, storagePath },
+  }) => {
+    try {
+      await db.insert(files).values({
+        mimeType,
+        id,
+        originalName,
+        sizeBytes,
+        storagePath,
+      });
+
+      setTimeout(async () => {
+        await db
+          .update(files)
+          .set({
+            geometry: {
+              boundingBox: { x: 250, y: 250, z: 45 },
+              volume: 2812500,
+              volumeCm3: 2812.5,
+              surfaceArea: 486000,
+            },
+          })
+          .where(eq(files.id, id));
+      }, 10_000);
+    } catch (error) {
+      console.error(error);
+
+      return {
+        status: 500,
+        body: {
+          message: "Geometry data extraction failed",
+        },
+      };
+    }
+
+    return {
+      status: 202,
+      body: {
+        id,
+        status: "IN_PROCESS",
+      },
+    };
   },
   getGeometryResult: async ({ params }) => {
     console.log("Returning geometry data for file with id", params.id);

@@ -2,8 +2,13 @@ import { config } from "dotenv";
 import { drizzle } from "drizzle-orm/postgres-js";
 import postgres from "postgres";
 import * as schema from "./schema";
+import { fileURLToPath } from "node:url";
+import path from "node:path";
 
-config({ path: "../.env" });
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+config({ path: path.resolve(__dirname, "../.env") });
 
 if (!process.env.DATABASE_URL) {
   throw new Error("DATABASE_URL is missing");

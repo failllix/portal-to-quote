@@ -16,11 +16,6 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "incremental": true,
-    "paths": {
-      "@/*": [
-        "../*"
-      ]
-    }
   },
   "exclude": [
     "node_modules"

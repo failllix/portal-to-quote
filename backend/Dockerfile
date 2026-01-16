@@ -4,24 +4,14 @@ WORKDIR /app
 
 ENV NODE_ENV=development
 
-COPY backend/package*.json ./backend/
-COPY shared/package*.json ./shared/
-
-WORKDIR /app/backend
+COPY package*.json ./
 
 RUN npm ci
-
-WORKDIR /app/shared
-
-RUN npm ci
-
-WORKDIR /app
 
 COPY backend ./backend/
 COPY shared ./shared/
-
-WORKDIR /app/backend
+COPY db ./db/
 
 EXPOSE 3333
 
-CMD ["npm", "run", "dev"]
+CMD ["npm", "run", "dev-backend"]

@@ -1,8 +1,7 @@
 import Heading1 from "../components/heading1";
-import { ApiFetcherArgs, initClient, tsRestFetchApi } from "@ts-rest/core";
-import { geometryContract } from "@/shared/contract";
 import Quote from "../components/quote";
 import { Suspense } from "react";
+import { apiClient } from "@/shared/client";
 
 export interface Material {
   name: string;
@@ -12,29 +11,16 @@ export interface Material {
   properties: string[];
 }
 
-const client = initClient(geometryContract, {
-  baseUrl: process.env.BACKEND_API_BASE_URL ?? "",
-  baseHeaders: {},
-  throwOnUnknownStatus: true,
-  api: async (args: ApiFetcherArgs) => {
-    const result = await tsRestFetchApi({
-      ...args,
-      fetchOptions: { cache: "no-store" },
-    });
-    return result;
-  },
-});
-
-export type GetGeometryResult = ReturnType<typeof client.getGeometryResult>;
+export type GetGeometryResult = ReturnType<typeof apiClient.getGeometryResult>;
 
 export default async function MaterialSelectionPage() {
-  const geometryResponse = client.getGeometryResult({
+  const geometryResponse = apiClient.getGeometryResult({
     params: {
       id: "fooBar",
     },
   });
 
-  const materialsResponse = client.getMaterials();
+  const materialsResponse = apiClient.getMaterials();
 
   return (
     <main className="px-12 mx-auto max-w-300 mt-12">
