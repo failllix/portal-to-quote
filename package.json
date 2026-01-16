@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "install-all": "find . -name 'node_modules' -prune -o -name '.next' -prune -o -name 'package.json' -type f -execdir sh -c 'echo Installing dependencies in: $(pwd) && npm ci' \\;",
     "supabase": "supabase start",
     "services": "docker compose up --build",
     "dev": "concurrently --names 'supabase,services' 'npm run supabase' 'npm run services' ",
