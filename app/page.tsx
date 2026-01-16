@@ -3,7 +3,7 @@
 import type React from "react";
 import { type ChangeEvent, useEffect, useRef, useState } from "react";
 import Button from "./components/button";
-import Heading1 from "./components/Heading1";
+import Heading1 from "./components/heading1";
 
 interface DropZoneText {
   text: string;

@@ -6,7 +6,7 @@ import {
   type PriceDetails,
 } from "../material-selection/logic";
 import Button from "./button";
-import Heading2 from "./Heading2";
+import Heading2 from "./heading2";
 import MaterialSelection from "./materials-selection";
 
 import type { geometryContract } from "@/shared/contract";

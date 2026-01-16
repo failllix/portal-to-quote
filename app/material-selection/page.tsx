@@ -1,4 +1,4 @@
-import Heading1 from "../components/Heading1";
+import Heading1 from "../components/heading1";
 import { ApiFetcherArgs, initClient, tsRestFetchApi } from "@ts-rest/core";
 import { geometryContract } from "@/shared/contract";
 import Quote from "../components/quote";

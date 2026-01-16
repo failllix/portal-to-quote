@@ -1,6 +1,6 @@
 import Card from "./card";
 import Chip from "./chip";
-import Heading2 from "./Heading2";
+import Heading2 from "./heading2";
 import type { Material } from "../material-selection/page";
 
 export default function MaterialSelection({

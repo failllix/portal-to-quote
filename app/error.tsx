@@ -1,6 +1,6 @@
 "use client";
 import Button from "./components/button";
-import Heading1 from "./components/Heading1";
+import Heading1 from "./components/heading1";
 
 export default function GlobalError({
   error,
