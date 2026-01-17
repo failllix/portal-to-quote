@@ -166,7 +166,7 @@ export default function Quote({
               </tr>
               <tr>
                 <td>
-                  Discount ({priceDetails?.discountPercentage ?? 0 * 100}%)
+                  Discount ({(priceDetails?.discountPercentage ?? 0) * 100}%)
                 </td>
                 <td className="pl-2">{priceDetails?.discount?.toFixed(2)}€</td>
               </tr>
