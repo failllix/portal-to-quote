@@ -1,0 +1,17 @@
+meta {
+  name: Process Payment
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{base_url}}/api/orders/{{order_id}}/payment
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "paymentStatus": "paid"
+  }
+}

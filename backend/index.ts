@@ -276,6 +276,15 @@ const router = s.router(geometryContract, {
     },
   }) => {
     try {
+      if (totalPrice < 25) {
+        return {
+          status: 400,
+          body: {
+            message: "Minimum order value is 25€.",
+          },
+        };
+      }
+
       const quote = await db.query.quotes.findFirst({
         where: eq(quotes.id, quoteId),
       });

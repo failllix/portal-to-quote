@@ -191,10 +191,15 @@ export default function Quote({
             </tbody>
           </table>
         </div>
+        {(priceDetails?.total ?? 0) < 25 && (
+          <p className="mt-8 italic">Minimum order value: 25€</p>
+        )}
         <div className="flex gap-4 items-center mt-8">
           <Button
             type="button"
-            disabled={isLoading || quantity < 1}
+            disabled={
+              isLoading || quantity < 1 || (priceDetails?.total ?? 0) < 25
+            }
             onClick={finishQuote}
           >
             Order now
