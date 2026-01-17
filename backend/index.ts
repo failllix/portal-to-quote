@@ -41,7 +41,7 @@ const router = s.router(geometryContract, {
             },
           })
           .where(eq(files.id, id));
-      }, 7_000);
+      }, 3_000);
     } catch (error) {
       console.error(error);
       return {
