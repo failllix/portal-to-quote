@@ -1,7 +1,7 @@
 import Heading1 from "../../components/heading1";
 import Quote from "../../components/quote";
 import { Suspense } from "react";
-import { apiClient } from "@/shared/client";
+import { apiClient, disabledMemoizatioApiClient } from "@/shared/client";
 
 export interface Material {
   name: string;
@@ -39,11 +39,12 @@ export default async function MaterialSelectionPage({
     const timeOut = 10_000;
 
     while (Date.now() < startTime + timeOut) {
-      const geometryResponse = await apiClient.getGeometryResult({
-        params: {
-          id: fileId,
-        },
-      });
+      const geometryResponse =
+        await disabledMemoizatioApiClient.getGeometryResult({
+          params: {
+            id: fileId,
+          },
+        });
 
       if (geometryResponse.status === 404 || geometryResponse.status === 500) {
         throw new Error(geometryResponse.body.message);
