@@ -36,7 +36,7 @@ export default function Home() {
 
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
     );
 
     const fileId = crypto.randomUUID();
@@ -61,8 +61,8 @@ export default function Home() {
       fileSize: selectedFile.size,
     });
 
-    setIsLoading(false);
     router.push(`/material-selection/${result.id}`);
+    setIsLoading(false);
   }
 
   function validateAndUpdateSelectedFiles(file: File) {
@@ -123,7 +123,7 @@ export default function Home() {
     const onDrop = (event: DragEvent) => {
       if (
         [...(event.dataTransfer?.items ?? [])].some(
-          (item) => item.kind === "file"
+          (item) => item.kind === "file",
         )
       ) {
         event.preventDefault();
@@ -132,7 +132,7 @@ export default function Home() {
 
     const onDragOver = (event: DragEvent) => {
       const fileItems = [...(event.dataTransfer?.items ?? [])].filter(
-        (item) => item.kind === "file"
+        (item) => item.kind === "file",
       );
       if (fileItems.length > 0) {
         event.preventDefault();
@@ -164,7 +164,7 @@ export default function Home() {
       <Heading1>File upload</Heading1>
       <label
         ref={dropZoneRef}
-        className={`mt-8 border-2 flex items-center justify-center border-amber-400 h-80 cursor-pointer rounded-lg ${
+        className={`mt-8 border-2 flex items-center justify-center border-foreground h-80 cursor-pointer rounded-lg ${
           dropZoneText.isError && "text-(--error)"
         }`}
         onDrop={dropHandler}

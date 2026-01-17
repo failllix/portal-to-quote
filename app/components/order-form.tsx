@@ -14,6 +14,7 @@ import type { ClientInferResponseBody } from "@ts-rest/core";
 import type { geometryContract } from "@/shared/contract";
 import { createOrder } from "../actions";
 import * as z from "zod";
+import LoadingSpinner from "./loading-spinner";
 
 type Quote = ClientInferResponseBody<typeof geometryContract.getQuote, 200>;
 
@@ -38,9 +39,11 @@ export default function OrderForm({ quote }: { quote: Quote }) {
 
     if (quote.status !== "ready") {
       throw new Error(
-        "Can not complete order for quote, which is not in 'ready' state."
+        "Can not complete order for quote, which is not in 'ready' state.",
       );
     }
+
+    setIsLoading(true);
 
     const { error } = await stripe.confirmPayment({
       elements,
@@ -149,9 +152,16 @@ export default function OrderForm({ quote }: { quote: Quote }) {
         ]}
       ></CheckboxGroup>
       {message && <p className="text-red-500">{message}</p>}
-      <Button type="submit" disabled={isLoading || !stripe || !elements}>
-        Buy Now ({quote.totalPrice}€)
-      </Button>
+      <div className="flex w-full gap-4 items-center">
+        <Button
+          type="submit"
+          disabled={isLoading || !stripe || !elements}
+          className="grow"
+        >
+          Buy Now ({quote.totalPrice}€)
+        </Button>
+        {isLoading && <LoadingSpinner></LoadingSpinner>}
+      </div>
     </form>
   );
 }

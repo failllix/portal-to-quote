@@ -16,6 +16,7 @@ import type {
 } from "@ts-rest/core";
 import { completeQuote } from "../actions";
 import { useRouter } from "next/navigation";
+import LoadingSpinner from "./loading-spinner";
 
 type GeometryPromise = ClientInferResponseBody<
   typeof geometryContract.getGeometryResult,
@@ -47,7 +48,7 @@ export default function Quote({
 
   if (geometryResult.status !== "done") {
     throw new Error(
-      "Geometry data extraction is expected to be in 'done' state."
+      "Geometry data extraction is expected to be in 'done' state.",
     );
   }
 
@@ -61,11 +62,14 @@ export default function Quote({
   const [quantity, setQuantity] = useState(1);
   const [selectedMaterialIndex, setSelectedMaterial] = useState(0);
   const [priceDetails, setPriceDetails] = useState<PriceDetails | undefined>();
+  const [isLoading, setIsLoading] = useState(false);
 
   async function finishQuote() {
     if (!priceDetails) {
       throw new Error("Price calculation failed.");
     }
+
+    setIsLoading(true);
 
     const material = materials[selectedMaterialIndex];
 
@@ -78,6 +82,7 @@ export default function Quote({
     });
 
     router.push(`/order/${quoteId}`);
+    setIsLoading(false);
   }
 
   function increaseQuantity() {
@@ -117,7 +122,7 @@ export default function Quote({
         volumeCm3: geometryProperties.volumeCm3,
         materialPrice: materials[selectedMaterialIndex].price,
         quantity,
-      })
+      }),
     );
   }, [quantity, selectedMaterialIndex, geometryProperties, materials]);
 
@@ -187,14 +192,16 @@ export default function Quote({
             </tbody>
           </table>
         </div>
-        <Button
-          type="button"
-          className="mt-8"
-          disabled={quantity < 1}
-          onClick={finishQuote}
-        >
-          Order now
-        </Button>
+        <div className="flex gap-4 items-center mt-8">
+          <Button
+            type="button"
+            disabled={isLoading || quantity < 1}
+            onClick={finishQuote}
+          >
+            Order now
+          </Button>
+          {isLoading && <LoadingSpinner></LoadingSpinner>}
+        </div>
       </div>
       <div className="grow">
         <MaterialSelection
