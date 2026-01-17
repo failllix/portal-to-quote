@@ -6,7 +6,7 @@ import type {
 } from "@ts-rest/core";
 import { apiClient } from "@/shared/client";
 import type { geometryContract } from "@/shared/contract";
-import type { PriceDetails } from "./material-selection/logic";
+import type { PriceDetails } from "../logic/pricing";
 
 export async function startFileProcessing({
   storagePath,

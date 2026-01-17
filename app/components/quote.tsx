@@ -8,10 +8,7 @@ import { useRouter } from "next/navigation";
 import { use, useEffect, useRef, useState } from "react";
 import type { geometryContract } from "@/shared/contract";
 import { completeQuote } from "../actions";
-import {
-  calculatePriceDetails,
-  type PriceDetails,
-} from "../material-selection/logic";
+import { calculatePriceDetails, type PriceDetails } from "../../logic/pricing";
 import Button from "./button";
 import Heading2 from "./heading2";
 import LoadingSpinner from "./loading-spinner";

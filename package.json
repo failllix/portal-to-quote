@@ -6,7 +6,7 @@
     "build-backend": "tsc -p ./backend/tsconfig.json",
     "build-frontend": "next build",
     "dev": "concurrently --names 'supabase,services' 'npm run supabase' 'npm run services' ",
-    "dev-backend": "nodemon --watch ./backend --watch ./shared --ext ts --exec tsx ./backend/index.ts",
+    "dev-backend": "nodemon --watch ./backend --watch ./shared --watch ./logic --ext ts --exec tsx ./backend/index.ts",
     "dev-frontend": "next dev",
     "format": "biome format --write",
     "lint": "biome check",

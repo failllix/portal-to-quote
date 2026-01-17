@@ -607,37 +607,14 @@
                   "materialId": {
                     "type": "string"
                   },
-                  "materialName": {
-                    "type": "string"
-                  },
-                  "materialPriceFactor": {
-                    "type": "number"
-                  },
                   "quantity": {
-                    "type": "number"
-                  },
-                  "volumeCm3": {
-                    "type": "number"
-                  },
-                  "unitPrice": {
-                    "type": "number"
-                  },
-                  "quantityDiscount": {
-                    "type": "number"
-                  },
-                  "totalPrice": {
-                    "type": "number"
+                    "type": "number",
+                    "minimum": 1
                   }
                 },
                 "required": [
                   "materialId",
-                  "materialName",
-                  "materialPriceFactor",
-                  "quantity",
-                  "volumeCm3",
-                  "unitPrice",
-                  "quantityDiscount",
-                  "totalPrice"
+                  "quantity"
                 ]
               }
             }
@@ -749,17 +726,13 @@
                       "card",
                       "purchase_order"
                     ]
-                  },
-                  "totalAmount": {
-                    "type": "number"
                   }
                 },
                 "required": [
                   "quoteId",
                   "customerName",
                   "customerEmail",
-                  "paymentMethod",
-                  "totalAmount"
+                  "paymentMethod"
                 ]
               }
             }
@@ -786,24 +759,6 @@
           },
           "400": {
             "description": "400",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "object",
-                  "properties": {
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "message"
-                  ]
-                }
-              }
-            }
-          },
-          "404": {
-            "description": "404",
             "content": {
               "application/json": {
                 "schema": {
@@ -873,7 +828,8 @@
                       "type": "string"
                     },
                     "customerEmail": {
-                      "type": "string"
+                      "type": "string",
+                      "format": "email"
                     },
                     "customerCompany": {
                       "type": "string"

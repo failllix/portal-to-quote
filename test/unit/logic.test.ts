@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { calculatePriceDetails } from "../../app/material-selection/logic";
+import { calculatePriceDetails } from "../../logic/pricing";
 
 describe("calculatePriceDetails", () => {
   describe("Basic Calculations", () => {

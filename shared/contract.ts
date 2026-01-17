@@ -58,13 +58,7 @@ const QuoteCreationBody = z.object({
 
 const QuoteCompletionBody = z.object({
   materialId: z.string(),
-  materialName: z.string(),
-  materialPriceFactor: z.number(),
-  quantity: z.number(),
-  volumeCm3: z.number(),
-  unitPrice: z.number(),
-  quantityDiscount: z.number(),
-  totalPrice: z.number(),
+  quantity: z.number().min(1),
 });
 
 const QuoteCreationResult = z.object({
@@ -117,7 +111,6 @@ const OrderCreationBody = z.object({
   customerEmail: z.string(),
   customerCompany: z.string().optional(),
   paymentMethod: paymentMethodEnum,
-  totalAmount: z.number(),
 });
 
 const OrderCreationResult = z.object({
@@ -128,7 +121,7 @@ const OrderResult = z.object({
   id: z.string(),
   quoteId: z.string(),
   customerName: z.string(),
-  customerEmail: z.string(),
+  customerEmail: z.string().email(),
   customerCompany: z.string().optional(),
   paymentMethod: paymentMethodEnum,
   paymentStatus: paymentStatusEnum,
@@ -224,7 +217,6 @@ export const geometryContract = contract.router({
     body: OrderCreationBody,
     responses: {
       200: OrderCreationResult,
-      404: ErrorResult,
       400: ErrorResult,
       500: ErrorResult,
     },

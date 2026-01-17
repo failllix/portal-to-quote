@@ -10,6 +10,7 @@ RUN npm ci
 
 COPY backend ./backend/
 COPY shared ./shared/
+COPY logic ./logic/
 COPY db ./db/
 
 EXPOSE 3333

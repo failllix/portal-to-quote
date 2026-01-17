@@ -6,6 +6,7 @@ import express from "express";
 import { db } from "../db/db";
 import { files, materials, orders, quotes } from "../db/schema";
 import { geometryContract } from "../shared/contract";
+import { calculatePriceDetails } from "../logic/pricing";
 
 const app = express();
 
@@ -264,23 +265,18 @@ const router = s.router(geometryContract, {
   },
   completeQuote: async ({
     params: { id: quoteId },
-    body: {
-      materialId,
-      materialName,
-      materialPriceFactor,
-      quantity,
-      quantityDiscount,
-      totalPrice,
-      unitPrice,
-      volumeCm3,
-    },
+    body: { materialId, quantity },
   }) => {
     try {
-      if (totalPrice < 25) {
+      const material = await db.query.materials.findFirst({
+        where: eq(materials.code, materialId),
+      });
+
+      if (!material) {
         return {
           status: 400,
           body: {
-            message: "Minimum order value is 25€.",
+            message: `Cannot complete quote, because requested material with id '${materialId}' was not found.`,
           },
         };
       }
@@ -302,7 +298,46 @@ const router = s.router(geometryContract, {
         return {
           status: 400,
           body: {
-            message: `Cannot complete quote, because quote with id '${quoteId}' is no longer in 'draft' state. Quote is already in '${quote.status}' state.`,
+            message: `Cannot complete quote, because quote with id '${quoteId}' is no longer in 'draft' state.`,
+          },
+        };
+      }
+
+      const file = await db.query.files.findFirst({
+        where: eq(files.id, quote.fileId),
+      });
+
+      if (!file) {
+        return {
+          status: 400,
+          body: {
+            message: `Cannot complete quote, because corresponding file for quote with id '${quoteId}' was not found.`,
+          },
+        };
+      }
+
+      if (!file.geometry) {
+        return {
+          status: 400,
+          body: {
+            message: `Cannot complete quote. Corresponding file with id '${quote.fileId}' is missing geometry data.`,
+          },
+        };
+      }
+
+      const volumeCm3 = file.geometry.volumeCm3;
+
+      const { unitPrice, discount, total } = calculatePriceDetails({
+        materialPrice: Number(material.price),
+        quantity,
+        volumeCm3,
+      });
+
+      if (total < 25) {
+        return {
+          status: 400,
+          body: {
+            message: "Minimum order value is 25€.",
           },
         };
       }
@@ -311,11 +346,11 @@ const router = s.router(geometryContract, {
         .update(quotes)
         .set({
           materialId,
-          materialName,
-          materialPriceFactor: materialPriceFactor.toString(),
+          materialName: material.name,
+          materialPriceFactor: material.price,
           quantity,
-          quantityDiscount: quantityDiscount.toString(),
-          totalPrice: totalPrice.toString(),
+          quantityDiscount: discount.toString(),
+          totalPrice: total.toString(),
           unitPrice: unitPrice.toString(),
           volumeCm3: volumeCm3.toString(),
           status: "ready",
@@ -343,7 +378,6 @@ const router = s.router(geometryContract, {
       customerName,
       paymentMethod,
       quoteId,
-      totalAmount,
     },
   }) => {
     try {
@@ -353,7 +387,7 @@ const router = s.router(geometryContract, {
 
       if (!quote) {
         return {
-          status: 404,
+          status: 400,
           body: {
             message: `Cannot create order, because quote with id '${quoteId}' was not found.`,
           },
@@ -387,6 +421,15 @@ const router = s.router(geometryContract, {
         };
       }
 
+      if (!quote.totalPrice) {
+        return {
+          status: 400,
+          body: {
+            message: `Quote with id '${quoteId}' is missing total price.`,
+          },
+        };
+      }
+
       const material = await db.query.materials.findFirst({
         where: eq(materials.code, quote.materialId),
       });
@@ -408,7 +451,7 @@ const router = s.router(geometryContract, {
           customerEmail,
           customerCompany,
           paymentMethod,
-          totalAmount: totalAmount.toString(),
+          totalAmount: quote.totalPrice,
           expectedDeliveryAt: new Date(
             Date.now() + material.leadTimeDays * 24 * 60 * 60 * 1000,
           ),
