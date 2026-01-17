@@ -20,7 +20,7 @@ export default function MaterialSelectionErrorDispaly({
     );
   }
 
-  if (error.name === "FileDataFetchEror") {
+  if (error.name === "FileDataFetchError") {
     return (
       <>
         <p>

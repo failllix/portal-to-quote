@@ -1,7 +1,7 @@
-export class FileDataFetchEror extends Error {
+export class FileDataFetchError extends Error {
   constructor() {
     super("Fetching file data failed");
-    this.name = "FileDataFetchEror";
+    this.name = "FileDataFetchError";
   }
 }
 
@@ -34,8 +34,8 @@ type GeometryExtractionFailedErrorType = {
   name: "GeometryExtractionFailedError";
   message: string;
 };
-type FileDataFetchErorType = {
-  name: "FileDataFetchEror";
+type FileDataFetchErrorType = {
+  name: "FileDataFetchError";
   message: string;
 };
 
@@ -47,5 +47,5 @@ type QuoteCreationErrorType = {
 export type MaterialSelectionError =
   | FileDataTimeoutErrorType
   | GeometryExtractionFailedErrorType
-  | FileDataFetchErorType
+  | FileDataFetchErrorType
   | QuoteCreationErrorType;

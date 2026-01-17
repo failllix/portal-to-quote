@@ -2,7 +2,7 @@ import { Suspense } from "react";
 import { apiClient, disabledMemoizatioApiClient } from "@/shared/client";
 import Quote from "../../components/quote";
 import {
-  FileDataFetchEror,
+  FileDataFetchError,
   FileDataTimeoutError,
   GeometryExtractionFailedError,
   QuoteCreationError,
@@ -52,7 +52,7 @@ export default async function MaterialSelectionPage({
         });
 
       if (geometryResponse.status === 404 || geometryResponse.status === 500) {
-        throw new FileDataFetchEror();
+        throw new FileDataFetchError();
       }
 
       if (geometryResponse.body.status === "failed") {
