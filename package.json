@@ -15,7 +15,8 @@
     "supabase": "supabase start",
     "supabase-seed": "supabase seed buckets",
     "db-update": "drizzle-kit push && tsx ./db/seed.ts",
-    "test": "vitest run"
+    "test": "vitest run",
+    "generate-open-api-spec": "tsx ./scripts/generate-api-spec.ts"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "5.4.1",
@@ -38,6 +39,7 @@
   "devDependencies": {
     "@biomejs/biome": "2.2.0",
     "@tailwindcss/postcss": "^4",
+    "@ts-rest/open-api": "3.52.1",
     "@types/cors": "2.8.19",
     "@types/express": "5.0.6",
     "@types/multer": "2.0.0",

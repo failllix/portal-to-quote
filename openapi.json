@@ -1,0 +1,1090 @@
+{
+  "openapi": "3.0.2",
+  "paths": {
+    "/api/files/startProcessing": {
+      "post": {
+        "summary": "Upload a CAD file for async processing",
+        "tags": [],
+        "parameters": [],
+        "requestBody": {
+          "description": "Body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "originalName": {
+                    "type": "string"
+                  },
+                  "storagePath": {
+                    "type": "string"
+                  },
+                  "sizeBytes": {
+                    "type": "number"
+                  },
+                  "mimeType": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "originalName",
+                  "storagePath",
+                  "sizeBytes",
+                  "mimeType"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "202",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "status": {
+                      "type": "string",
+                      "enum": [
+                        "in_process"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "status"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/files/{id}": {
+      "get": {
+        "summary": "Result of the geometry extraction service",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "discriminator": {
+                    "propertyName": "status"
+                  },
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "in_process",
+                            "failed"
+                          ]
+                        },
+                        "processingTimeMs": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "processingTimeMs"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "done"
+                          ]
+                        },
+                        "properties": {
+                          "type": "object",
+                          "properties": {
+                            "boundingBox": {
+                              "type": "object",
+                              "properties": {
+                                "x": {
+                                  "type": "number"
+                                },
+                                "y": {
+                                  "type": "number"
+                                },
+                                "z": {
+                                  "type": "number"
+                                }
+                              },
+                              "required": [
+                                "x",
+                                "y",
+                                "z"
+                              ]
+                            },
+                            "volume": {
+                              "type": "number"
+                            },
+                            "volumeCm3": {
+                              "type": "number"
+                            },
+                            "surfaceArea": {
+                              "type": "number"
+                            }
+                          },
+                          "required": [
+                            "boundingBox",
+                            "volume",
+                            "volumeCm3",
+                            "surfaceArea"
+                          ]
+                        },
+                        "processingTimeMs": {
+                          "type": "number"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "properties",
+                        "processingTimeMs"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/materials": {
+      "get": {
+        "summary": "Available materials",
+        "tags": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": {
+                        "type": "string"
+                      },
+                      "code": {
+                        "type": "string"
+                      },
+                      "price": {
+                        "type": "number"
+                      },
+                      "leadTimeDays": {
+                        "type": "number"
+                      },
+                      "properties": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "name",
+                      "code",
+                      "price",
+                      "leadTimeDays",
+                      "properties"
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/quotes": {
+      "post": {
+        "summary": "Create quote",
+        "tags": [],
+        "parameters": [],
+        "requestBody": {
+          "description": "Body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "fileId": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "fileId"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/quotes/{id}": {
+      "get": {
+        "summary": "Get quote details",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "discriminator": {
+                    "propertyName": "status"
+                  },
+                  "oneOf": [
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "draft"
+                          ]
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "fileId": {
+                          "type": "string"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "expiresAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "id",
+                        "fileId",
+                        "createdAt",
+                        "expiresAt"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "ready",
+                            "ordered"
+                          ]
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "fileId": {
+                          "type": "string"
+                        },
+                        "materialId": {
+                          "type": "string"
+                        },
+                        "materialName": {
+                          "type": "string"
+                        },
+                        "materialPriceFactor": {
+                          "type": "number"
+                        },
+                        "quantity": {
+                          "type": "number"
+                        },
+                        "volumeCm3": {
+                          "type": "number"
+                        },
+                        "unitPrice": {
+                          "type": "number"
+                        },
+                        "quantityDiscount": {
+                          "type": "number"
+                        },
+                        "totalPrice": {
+                          "type": "number"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "expiresAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "id",
+                        "fileId",
+                        "materialId",
+                        "materialName",
+                        "materialPriceFactor",
+                        "quantity",
+                        "volumeCm3",
+                        "unitPrice",
+                        "quantityDiscount",
+                        "totalPrice",
+                        "createdAt",
+                        "expiresAt"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "status": {
+                          "type": "string",
+                          "enum": [
+                            "expired"
+                          ]
+                        },
+                        "id": {
+                          "type": "string"
+                        },
+                        "fileId": {
+                          "type": "string"
+                        },
+                        "materialId": {
+                          "type": "string"
+                        },
+                        "materialName": {
+                          "type": "string"
+                        },
+                        "materialPriceFactor": {
+                          "type": "number"
+                        },
+                        "quantity": {
+                          "type": "number"
+                        },
+                        "volumeCm3": {
+                          "type": "number"
+                        },
+                        "unitPrice": {
+                          "type": "number"
+                        },
+                        "quantityDiscount": {
+                          "type": "number"
+                        },
+                        "totalPrice": {
+                          "type": "number"
+                        },
+                        "createdAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        },
+                        "expiresAt": {
+                          "type": "string",
+                          "format": "date-time"
+                        }
+                      },
+                      "required": [
+                        "status",
+                        "id",
+                        "fileId",
+                        "createdAt",
+                        "expiresAt"
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/quotes/{id}/complete": {
+      "post": {
+        "summary": "Add missing data to quote and set to ready status",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "materialId": {
+                    "type": "string"
+                  },
+                  "materialName": {
+                    "type": "string"
+                  },
+                  "materialPriceFactor": {
+                    "type": "number"
+                  },
+                  "quantity": {
+                    "type": "number"
+                  },
+                  "volumeCm3": {
+                    "type": "number"
+                  },
+                  "unitPrice": {
+                    "type": "number"
+                  },
+                  "quantityDiscount": {
+                    "type": "number"
+                  },
+                  "totalPrice": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "materialId",
+                  "materialName",
+                  "materialPriceFactor",
+                  "quantity",
+                  "volumeCm3",
+                  "unitPrice",
+                  "quantityDiscount",
+                  "totalPrice"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders": {
+      "post": {
+        "summary": "Create order",
+        "tags": [],
+        "parameters": [],
+        "requestBody": {
+          "description": "Body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "quoteId": {
+                    "type": "string"
+                  },
+                  "customerName": {
+                    "type": "string"
+                  },
+                  "customerEmail": {
+                    "type": "string"
+                  },
+                  "customerCompany": {
+                    "type": "string"
+                  },
+                  "paymentMethod": {
+                    "type": "string",
+                    "enum": [
+                      "card",
+                      "purchase_order"
+                    ]
+                  },
+                  "totalAmount": {
+                    "type": "number"
+                  }
+                },
+                "required": [
+                  "quoteId",
+                  "customerName",
+                  "customerEmail",
+                  "paymentMethod",
+                  "totalAmount"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders/{id}": {
+      "get": {
+        "summary": "Get order details",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "quoteId": {
+                      "type": "string"
+                    },
+                    "customerName": {
+                      "type": "string"
+                    },
+                    "customerEmail": {
+                      "type": "string"
+                    },
+                    "customerCompany": {
+                      "type": "string"
+                    },
+                    "paymentMethod": {
+                      "type": "string",
+                      "enum": [
+                        "card",
+                        "purchase_order"
+                      ]
+                    },
+                    "paymentStatus": {
+                      "type": "string",
+                      "enum": [
+                        "pending",
+                        "paid",
+                        "failed"
+                      ]
+                    },
+                    "expectedDeliveryAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "totalAmount": {
+                      "type": "number"
+                    },
+                    "currency": {
+                      "type": "string"
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "quoteId",
+                    "customerName",
+                    "customerEmail",
+                    "paymentMethod",
+                    "paymentStatus",
+                    "expectedDeliveryAt",
+                    "totalAmount",
+                    "currency",
+                    "createdAt"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/orders/{id}/payment": {
+      "post": {
+        "summary": "Add payment method to order",
+        "tags": [],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "Body",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "paymentStatus": {
+                    "type": "string",
+                    "enum": [
+                      "paid",
+                      "failed"
+                    ]
+                  }
+                },
+                "required": [
+                  "paymentStatus"
+                ]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "200",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id"
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "400",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "404",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "500",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "message"
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "info": {
+    "title": "My API Service",
+    "version": "1.0.0",
+    "description": "API description generated from ts-rest contract"
+  },
+  "servers": [
+    {
+      "url": "http://localhost:3000",
+      "description": "Local Development Server"
+    }
+  ]
+}
