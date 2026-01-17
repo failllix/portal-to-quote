@@ -369,6 +369,15 @@ const router = s.router(geometryContract, {
         };
       }
 
+      if (new Date() > quote.expiresAt) {
+        return {
+          status: 400,
+          body: {
+            message: `Cannot create order, because quote with id '${quoteId}' is expired.`,
+          },
+        };
+      }
+
       if (!quote.materialId) {
         return {
           status: 400,
