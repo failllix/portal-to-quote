@@ -37,8 +37,18 @@ export default function Quote({
   const router = useRouter();
   const geometryResult = use(geometryRequest);
 
-  if (!geometryResult?.properties) {
-    throw new Error("Geometry data is missing");
+  if (geometryResult.status === "failed") {
+    throw new Error("Geometry data extraction has failed.");
+  }
+
+  if (geometryResult.status === "in_process") {
+    throw new Error("Geometry data extraction is still in process.");
+  }
+
+  if (geometryResult.status !== "done") {
+    throw new Error(
+      "Geometry data extraction is expected to be in 'done' state."
+    );
   }
 
   const geometryProperties = geometryResult.properties;
