@@ -7,6 +7,7 @@ import Heading1 from "./components/heading1";
 import { uploadFile } from "./actions";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
+import LoadingSpinner from "./components/loading-spinner";
 
 interface DropZoneText {
   text: string;
@@ -23,12 +24,15 @@ export default function Home() {
     isError: false,
   });
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const dropZoneRef = useRef<HTMLLabelElement>(null);
 
   async function handleUpload() {
     if (selectedFile === null) {
       return;
     }
+
+    setIsLoading(true);
 
     const supabase = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -57,6 +61,7 @@ export default function Home() {
       fileSize: selectedFile.size,
     });
 
+    setIsLoading(false);
     router.push(`/material-selection/${result.id}`);
   }
 
@@ -173,17 +178,18 @@ export default function Home() {
         />
       </label>
 
-      <div className="mt-8 flex gap-4">
+      <div className="mt-8 flex gap-4 items-center">
         <Button type="button" onClick={clearButtonHandler}>
           Clear
         </Button>
         <Button
           type="button"
-          disabled={selectedFile == null || dropZoneText.isError}
+          disabled={selectedFile == null || dropZoneText.isError || isLoading}
           onClick={handleUpload}
         >
-          Configure Materials
+          Upload
         </Button>
+        {isLoading && <LoadingSpinner></LoadingSpinner>}
       </div>
     </main>
   );
