@@ -1,11 +1,11 @@
 import { redirect } from "next/navigation";
-import Heading1 from "@/app/components/heading1";
 import Heading2 from "@/app/components/heading2";
 import HomeButton from "@/app/components/home-button";
 import QuoteSummary from "@/app/components/quote-summary";
 import { apiClient } from "@/shared/client";
 import { processPayment } from "../../actions";
 import { stripe } from "../../utils/stripe";
+import { OrderFetchError, QuoteFetchError } from "./errors";
 
 export default async function OrderCompletionPage({
   params,
@@ -37,7 +37,7 @@ export default async function OrderCompletionPage({
   const orderResponse = await apiClient.getOrder({ params: { id: orderId } });
 
   if (orderResponse.status !== 200) {
-    throw new Error(`Fetching details for order with id '${orderId}' failed.`);
+    throw new OrderFetchError();
   }
 
   const order = orderResponse.body;
@@ -49,18 +49,13 @@ export default async function OrderCompletionPage({
   });
 
   if (quoteResponse.status !== 200) {
-    throw new Error(
-      `Fetching details for quote with id '${order.quoteId}' failed.`,
-    );
+    throw new QuoteFetchError();
   }
 
   const quote = quoteResponse.body;
 
   return (
-    <main className="px-12 mx-auto max-w-300 pb-12">
-      <Heading1>
-        {status === "succeeded" ? "Order Confirmation" : "Payment Failed"}
-      </Heading1>
+    <div>
       <p className="mt-8">
         {status === "succeeded"
           ? `Your order was successful! Thanks for shopping at SAEKI.`
@@ -77,6 +72,6 @@ export default async function OrderCompletionPage({
         </div>
       )}
       <HomeButton className="mt-8">Start New Order</HomeButton>
-    </main>
+    </div>
   );
 }

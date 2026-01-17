@@ -1,7 +1,12 @@
 import { Suspense } from "react";
 import { apiClient, disabledMemoizatioApiClient } from "@/shared/client";
-import Heading1 from "../../components/heading1";
 import Quote from "../../components/quote";
+import {
+  FileDataFetchEror,
+  FileDataTimeoutError,
+  GeometryExtractionFailedError,
+  QuoteCreationError,
+} from "./errors";
 
 export interface Material {
   name: string;
@@ -27,7 +32,7 @@ export default async function MaterialSelectionPage({
   });
 
   if (quoteCreationResult.status !== 200) {
-    throw new Error(quoteCreationResult.body.message);
+    throw new QuoteCreationError();
   }
 
   const quoteId = quoteCreationResult.body.id;
@@ -47,11 +52,11 @@ export default async function MaterialSelectionPage({
         });
 
       if (geometryResponse.status === 404 || geometryResponse.status === 500) {
-        throw new Error(geometryResponse.body.message);
+        throw new FileDataFetchEror();
       }
 
       if (geometryResponse.body.status === "failed") {
-        throw new Error("Geometry data processing failed.");
+        throw new GeometryExtractionFailedError();
       }
 
       if (geometryResponse.body.status === "done") {
@@ -61,19 +66,16 @@ export default async function MaterialSelectionPage({
       await new Promise((resolve) => setTimeout(resolve, 500));
     }
 
-    throw new Error("Waiting for geometry data timed out.");
+    throw new FileDataTimeoutError();
   }
 
   return (
-    <main className="px-12 mx-auto max-w-300">
-      <Heading1>Material Selection</Heading1>
-      <Suspense fallback={<div>Analyzing geometry...</div>}>
-        <Quote
-          quoteId={quoteId}
-          geometryRequest={waitUntilGeometryDataIsAvailable()}
-          materialsRequest={materialsRequest}
-        ></Quote>
-      </Suspense>
-    </main>
+    <Suspense fallback={<div>Analyzing geometry...</div>}>
+      <Quote
+        quoteId={quoteId}
+        geometryRequest={waitUntilGeometryDataIsAvailable()}
+        materialsRequest={materialsRequest}
+      ></Quote>
+    </Suspense>
   );
 }
