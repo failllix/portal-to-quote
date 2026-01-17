@@ -15,6 +15,21 @@ app.use(bodyParser.json());
 
 const s = initServer();
 
+async function finishGeometryExtraction(fileId: string) {
+  await db
+    .update(files)
+    .set({
+      status: "done",
+      geometry: {
+        boundingBox: { x: 250, y: 250, z: 45 },
+        volume: 2812500,
+        volumeCm3: 2812.5,
+        surfaceArea: 486000,
+      },
+    })
+    .where(eq(files.id, fileId));
+}
+
 const router = s.router(geometryContract, {
   startFileProcessing: async ({
     body: { id, mimeType, originalName, sizeBytes, storagePath },
@@ -28,20 +43,14 @@ const router = s.router(geometryContract, {
         storagePath,
       });
 
-      setTimeout(async () => {
-        await db
-          .update(files)
-          .set({
-            status: "done",
-            geometry: {
-              boundingBox: { x: 250, y: 250, z: 45 },
-              volume: 2812500,
-              volumeCm3: 2812.5,
-              surfaceArea: 486000,
-            },
-          })
-          .where(eq(files.id, id));
-      }, 3_000);
+      // We cannot emulate async processing in production, because Vercel kills the function once the response was send. Thus, the setTimeout callback is never executed and the file processing will never finish.
+      if (process.env.NODE_ENV === "production") {
+        await finishGeometryExtraction(id);
+      } else {
+        setTimeout(async () => {
+          await finishGeometryExtraction(id);
+        }, 6_000);
+      }
     } catch (error) {
       console.error(error);
       return {

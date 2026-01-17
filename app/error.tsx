@@ -10,7 +10,7 @@ export default function GlobalError({
   reset: () => void;
 }) {
   return (
-    <div className="h-full flex flex-col gap-8 items-center justify-center">
+    <div className="h-full flex flex-col gap-8 items-center justify-center text-center mx-20">
       <Heading1>Something went wrong!</Heading1>
       <p>{error.message}</p>
       {error.digest && <p>{error.digest}</p>}
