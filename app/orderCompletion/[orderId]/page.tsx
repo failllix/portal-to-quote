@@ -1,6 +1,7 @@
 import { redirect } from "next/navigation";
 import Heading1 from "@/app/components/heading1";
 import Heading2 from "@/app/components/heading2";
+import HomeButton from "@/app/components/home-button";
 import QuoteSummary from "@/app/components/quote-summary";
 import { apiClient } from "@/shared/client";
 import { processPayment } from "../../actions";
@@ -41,6 +42,8 @@ export default async function OrderCompletionPage({
 
   const order = orderResponse.body;
 
+  console.log(new Date(order.expectedDeliveryAt));
+
   const quoteResponse = await apiClient.getQuote({
     params: { id: order.quoteId },
   });
@@ -60,15 +63,20 @@ export default async function OrderCompletionPage({
       </Heading1>
       <p className="mt-8">
         {status === "succeeded"
-          ? "Your order was successful! Thanks for shopping at SAEKI."
+          ? `Your order was successful! Thanks for shopping at SAEKI.`
           : "Your payment has failed."}
       </p>
       {status === "succeeded" && (
-        <>
+        <div className="mt-4">
+          <p>Your reference number: {order.id}</p>
           <Heading2 className="mt-8">Summary</Heading2>
-          <QuoteSummary quote={quote}></QuoteSummary>
-        </>
+          <QuoteSummary
+            quote={quote}
+            expectedDeliveryDate={new Date(order.expectedDeliveryAt)}
+          ></QuoteSummary>
+        </div>
       )}
+      <HomeButton className="mt-8">Start New Order</HomeButton>
     </main>
   );
 }

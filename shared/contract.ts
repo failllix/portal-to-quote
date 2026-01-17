@@ -132,6 +132,7 @@ const OrderResult = z.object({
   customerCompany: z.string().optional(),
   paymentMethod: paymentMethodEnum,
   paymentStatus: paymentStatusEnum,
+  expectedDeliveryAt: z.string().datetime(),
   totalAmount: z.number(),
   currency: z.string(),
   createdAt: z.string().datetime(),

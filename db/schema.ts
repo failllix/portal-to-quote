@@ -106,6 +106,7 @@ export const orders = pgTable("orders", {
     .notNull(),
   totalAmount: decimal("total_amount", { precision: 10, scale: 2 }).notNull(),
   currency: varchar("currency", { length: 3 }).default("EUR").notNull(),
+  expectedDeliveryAt: timestamp("expected_delivery").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
 

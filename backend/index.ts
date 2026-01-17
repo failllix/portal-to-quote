@@ -369,6 +369,28 @@ const router = s.router(geometryContract, {
         };
       }
 
+      if (!quote.materialId) {
+        return {
+          status: 400,
+          body: {
+            message: `No material was saved for quote with id '${quoteId}'.`,
+          },
+        };
+      }
+
+      const material = await db.query.materials.findFirst({
+        where: eq(materials.code, quote.materialId),
+      });
+
+      if (material === undefined) {
+        return {
+          status: 400,
+          body: {
+            message: `No material was found with id '${quote.materialId}' of quote with id '${quoteId}'.`,
+          },
+        };
+      }
+
       const ordersResult = await db
         .insert(orders)
         .values({
@@ -378,6 +400,9 @@ const router = s.router(geometryContract, {
           customerCompany,
           paymentMethod,
           totalAmount: totalAmount.toString(),
+          expectedDeliveryAt: new Date(
+            Date.now() + material.leadTimeDays * 24 * 60 * 60 * 1000,
+          ),
         })
         .returning({ id: orders.id });
 
@@ -421,6 +446,7 @@ const router = s.router(geometryContract, {
           customerName: order.customerName,
           paymentMethod: order.paymentMethod,
           paymentStatus: order.paymentStatus,
+          expectedDeliveryAt: order.expectedDeliveryAt.toISOString(),
           quoteId: order.quoteId,
           totalAmount: Number(order.totalAmount),
         },

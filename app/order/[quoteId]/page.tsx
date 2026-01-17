@@ -1,5 +1,6 @@
 import Checkout from "@/app/components/checkout";
 import QuoteSummary from "@/app/components/quote-summary";
+import StartNewQuoteButton from "@/app/components/start-new-quote-button";
 import { stripe } from "@/app/utils/stripe";
 import { apiClient } from "@/shared/client";
 import Heading1 from "../../components/heading1";
@@ -35,6 +36,15 @@ export default async function MaterialSelectionPage({
     );
   }
 
+  const materialsResponse = await apiClient.getMaterials();
+
+  const materials = materialsResponse.body;
+  const filteredMaterial = materials.filter(
+    (material) => material.code === quote.materialId,
+  );
+
+  const material = filteredMaterial[0];
+
   const { client_secret: clientSecret } = await stripe.paymentIntents.create({
     amount: quote.totalPrice * 100,
     currency: "eur",
@@ -47,8 +57,39 @@ export default async function MaterialSelectionPage({
   return (
     <main className="px-12 mx-auto max-w-300 pb-12">
       <Heading1>Checkout</Heading1>
-      <QuoteSummary quote={quote}></QuoteSummary>
-      <Checkout quote={quote} clientSecret={clientSecret}></Checkout>
+      {material ? (
+        <>
+          <QuoteSummary
+            quote={quote}
+            expectedDeliveryDate={
+              new Date(Date.now() + material.leadTimeDays * 24 * 60 * 60 * 1000)
+            }
+          ></QuoteSummary>
+          <Checkout quote={quote} clientSecret={clientSecret}></Checkout>
+        </>
+      ) : (
+        <MissingMaterialMessage
+          materialName={quote.materialName}
+          fileId={quote.fileId}
+        ></MissingMaterialMessage>
+      )}
     </main>
+  );
+}
+
+function MissingMaterialMessage({
+  materialName,
+  fileId,
+}: {
+  materialName: string;
+  fileId: string;
+}) {
+  return (
+    <div className="flex flex-col gap-4 mt-8">
+      <p>Looks like your select material '{materialName}' was discontinued.</p>
+      <StartNewQuoteButton className="w-fit" fileId={fileId}>
+        Select another
+      </StartNewQuoteButton>
+    </div>
   );
 }

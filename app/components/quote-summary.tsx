@@ -5,7 +5,13 @@ import type { geometryContract } from "@/shared/contract";
 
 type Quote = ClientInferResponseBody<typeof geometryContract.getQuote, 200>;
 
-export default function QuoteSummary({ quote }: { quote: Quote }) {
+export default function QuoteSummary({
+  quote,
+  expectedDeliveryDate,
+}: {
+  quote: Quote;
+  expectedDeliveryDate: Date;
+}) {
   if (!(quote.status === "ready" || quote.status === "ordered")) {
     throw new Error(
       "Can only show summary for quote in 'ready' or 'ordered' status",
@@ -27,6 +33,15 @@ export default function QuoteSummary({ quote }: { quote: Quote }) {
         <p className="col-start-2 col-end-2 text-right font-bold">Total:</p>
         <p className="col-start-3 col-end-3 font-bold">{quote.totalPrice}€</p>
       </div>
+      <p>
+        Expected Delivery:{" "}
+        {expectedDeliveryDate.toLocaleString("en-GB", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "numeric",
+          weekday: "long",
+        })}
+      </p>
     </div>
   );
 }
