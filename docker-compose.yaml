@@ -29,7 +29,7 @@ services:
       - /app/.next
     environment:
       - BACKEND_API_BASE_URL=http://host.docker.internal:3333
-      - NEXT_PUBLIC_SUPABASE_URL=http://host.docker.internal:54321
+      - NEXT_PUBLIC_SUPABASE_URL=http://127.0.0.1:54321
     depends_on:
       - backend
     extra_hosts:

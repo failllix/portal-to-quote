@@ -6,6 +6,7 @@ import Button from "./components/button";
 import Heading1 from "./components/heading1";
 import { uploadFile } from "./actions";
 import { useRouter } from "next/navigation";
+import { createClient } from "@supabase/supabase-js";
 
 interface DropZoneText {
   text: string;
@@ -29,10 +30,32 @@ export default function Home() {
       return;
     }
 
-    const formData = new FormData();
-    formData.append("file", selectedFile);
+    const supabase = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!
+    );
 
-    const result = await uploadFile(formData);
+    const fileId = crypto.randomUUID();
+    const storagePath = `stepFiles/${fileId}`;
+
+    const fileBody = await selectedFile.text();
+
+    const { error } = await supabase.storage
+      .from("uploads")
+      .upload(storagePath, fileBody, {
+        upsert: true,
+      });
+
+    if (error) {
+      throw error;
+    }
+
+    const result = await uploadFile({
+      fileId,
+      storagePath,
+      fileName: selectedFile.name,
+      fileSize: selectedFile.size,
+    });
 
     router.push(`/material-selection/${result.id}`);
   }

@@ -2,45 +2,30 @@
 
 import { apiClient } from "@/shared/client";
 import type { geometryContract } from "@/shared/contract";
-import { createClient } from "@supabase/supabase-js";
 import type {
   ClientInferRequest,
   ClientInferResponseBody,
 } from "@ts-rest/core";
 import type { PriceDetails } from "./material-selection/logic";
 
-export async function uploadFile(formData: FormData) {
-  const file = formData.get("file") as File;
-
-  if (!file) {
-    throw new Error("No file found");
-  }
-
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SECRET_KEY!
-  );
-
-  const fileId = crypto.randomUUID();
-  const storagePath = `stepFiles/${fileId}`;
-
-  const { error } = await supabase.storage
-    .from("uploads")
-    .upload(storagePath, file, {
-      upsert: true,
-    });
-
-  if (error) {
-    throw error;
-  }
-
+export async function uploadFile({
+  storagePath,
+  fileId,
+  fileName,
+  fileSize,
+}: {
+  storagePath: string;
+  fileId: string;
+  fileName: string;
+  fileSize: number;
+}) {
   const fileProcessingResponse = await apiClient.startFileProcessing({
     body: {
       storagePath,
       id: fileId,
       mimeType: "text/plain",
-      originalName: file.name,
-      sizeBytes: file.size,
+      originalName: fileName,
+      sizeBytes: fileSize,
     },
   });
 
