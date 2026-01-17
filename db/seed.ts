@@ -20,14 +20,14 @@ async function main() {
         name: "ABS",
         code: "abs",
         price: "0.12",
-        leadTimeDays: 3,
+        leadTimeDays: 5,
         properties: ["Heat resistant", "Good mechanical strength"],
       },
       {
         name: "Nylon PA12",
         code: "pa12",
         price: "0.28",
-        leadTimeDays: 3,
+        leadTimeDays: 7,
         properties: ["Industrial grade", "High wear resistance"],
       },
       {
