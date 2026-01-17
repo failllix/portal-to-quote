@@ -8,7 +8,7 @@ import { ClientInferResponseBody } from "@ts-rest/core";
 import { geometryContract } from "@/shared/contract";
 
 const stripePromise = loadStripe(
-  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,
 );
 
 type Quote = ClientInferResponseBody<typeof geometryContract.getQuote, 200>;

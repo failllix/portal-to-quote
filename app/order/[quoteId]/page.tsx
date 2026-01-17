@@ -34,7 +34,7 @@ export default async function MaterialSelectionPage({
 
   if (quote.status !== "ready") {
     throw new Error(
-      "Cannot create order for quote, which is not in 'ready' state"
+      "Cannot create order for quote, which is not in 'ready' state",
     );
   }
 
