@@ -15,93 +15,95 @@ import CheckboxGroup from "./checkbox-group";
 import Input from "./input";
 import LoadingSpinner from "./loading-spinner";
 import RadioGroup from "./radio-group";
+import { useSnackbar } from "../context/snackbar-context";
 
 type Quote = ClientInferResponseBody<typeof geometryContract.getQuote, 200>;
 
 export default function OrderForm({ quote }: { quote: Quote }) {
-  if (quote.status !== "ready") {
-    throw new Error("Can show order form for quotes in 'ready' state.");
-  }
-
+  const snackBar = useSnackbar();
   const stripe = useStripe();
   const elements = useElements();
 
+  if (quote.status !== "ready") {
+    throw new Error("Cannot show order form for quotes not in 'ready' state.");
+  }
   const [message, setMessage] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [paymentMethod, setPaymentMethod] = useState<string | null>(null);
 
   async function order(event: FormEvent<HTMLFormElement>) {
+    setIsLoading(true);
     event.preventDefault();
 
     if (!stripe || !elements) {
       return;
     }
 
-    if (quote.status !== "ready") {
-      throw new Error(
-        "Can not complete order for quote, which is not in 'ready' state.",
-      );
-    }
+    try {
+      const formData = new FormData(event.currentTarget);
 
-    setIsLoading(true);
-
-    const formData = new FormData(event.currentTarget);
-
-    const OrderFormData = z.object({
-      customerCompany: z.string().optional(),
-      customerEmail: z.string(),
-      customerName: z.string(),
-      paymentMethod: z.enum(["card", "purchase_order"]),
-    });
-
-    const formDataObject = {
-      customerCompany: formData.get("company"),
-      customerEmail: formData.get("email"),
-      customerName: formData.get("name"),
-      paymentMethod: formData.get("payment_method"),
-    };
-
-    const parsedFormData = OrderFormData.safeParse(formDataObject);
-
-    if (parsedFormData.error) {
-      throw new Error("Parsing of form data failed.", {
-        cause: parsedFormData.error,
+      const OrderFormData = z.object({
+        customerCompany: z.string().optional(),
+        customerEmail: z.string(),
+        customerName: z.string(),
+        paymentMethod: z.enum(["card", "purchase_order"]),
       });
-    }
 
-    const validatedFormData = parsedFormData.data;
+      const formDataObject = {
+        customerCompany: formData.get("company"),
+        customerEmail: formData.get("email"),
+        customerName: formData.get("name"),
+        paymentMethod: formData.get("payment_method"),
+      };
 
-    if (formDataObject.customerCompany) setIsLoading(true);
+      const parsedFormData = OrderFormData.safeParse(formDataObject);
 
-    const orderId = await createOrder({
-      body: {
-        customerCompany: validatedFormData.customerCompany,
-        customerEmail: validatedFormData.customerEmail,
-        customerName: validatedFormData.customerName,
-        paymentMethod: validatedFormData.paymentMethod,
-        quoteId: quote.id,
-        totalAmount: quote.totalPrice,
-      },
-    });
-
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${process.env.NEXT_PUBLIC_URL}/orderCompletion/${orderId}`,
-      },
-    });
-
-    if (error) {
-      if (error.type === "card_error" || error.type === "validation_error") {
-        setMessage(error.message ?? null);
+      if (parsedFormData.error) {
+        throw new Error("Form data is invalid.", {
+          cause: parsedFormData.error,
+        });
       }
 
-      setMessage("An unexpected error occurred.");
-      setIsLoading(false);
-      return;
-    }
+      const validatedFormData = parsedFormData.data;
 
-    setIsLoading(false);
+      const orderCreationResult = await createOrder({
+        body: {
+          customerCompany: validatedFormData.customerCompany,
+          customerEmail: validatedFormData.customerEmail,
+          customerName: validatedFormData.customerName,
+          paymentMethod: validatedFormData.paymentMethod,
+          quoteId: quote.id,
+        },
+      });
+
+      if (orderCreationResult.status !== 200) {
+        throw new Error("Creating order entity failed");
+      }
+
+      const { error } = await stripe.confirmPayment({
+        elements,
+        confirmParams: {
+          return_url: `${process.env.NEXT_PUBLIC_URL}/orderCompletion/${orderCreationResult.body.id}`,
+        },
+      });
+
+      if (error) {
+        if (error.type === "card_error" || error.type === "validation_error") {
+          setMessage(error.message ?? null);
+        }
+
+        setMessage("An unexpected error occurred.");
+        return;
+      }
+    } catch (error) {
+      if (error instanceof Error) {
+        snackBar(error.message, "error");
+      } else {
+        snackBar("Placing order faild.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   function handleFormChange(event: FormEvent<HTMLFormElement>) {

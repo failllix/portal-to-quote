@@ -1,121 +1,75 @@
 "use server";
 
-import type {
-  ClientInferRequest,
-  ClientInferResponseBody,
-} from "@ts-rest/core";
+import type { ClientInferRequest, ClientInferResponses } from "@ts-rest/core";
 import { apiClient } from "@/shared/client";
 import type { geometryContract } from "@/shared/contract";
-import type { PriceDetails } from "../logic/pricing";
+
+type StartFileProcessingBody = ClientInferRequest<
+  typeof geometryContract.startFileProcessing
+>;
+type StartFileProcessingResponse = ClientInferResponses<
+  typeof geometryContract.startFileProcessing
+>;
 
 export async function startFileProcessing({
-  storagePath,
-  fileId,
-  fileName,
-  fileSize,
-}: {
-  storagePath: string;
-  fileId: string;
-  fileName: string;
-  fileSize: number;
-}) {
+  body,
+}: StartFileProcessingBody): Promise<StartFileProcessingResponse> {
   const fileProcessingResponse = await apiClient.startFileProcessing({
-    body: {
-      storagePath,
-      id: fileId,
-      mimeType: "text/plain",
-      originalName: fileName,
-      sizeBytes: fileSize,
-    },
+    body,
   });
 
-  if (fileProcessingResponse.status !== 202) {
-    throw Error(fileProcessingResponse.body.message);
-  }
-
-  return { id: fileId };
+  return fileProcessingResponse;
 }
 
-type Materials = ClientInferResponseBody<
-  typeof geometryContract.getMaterials,
-  200
+type CompleteQuoteBody = ClientInferRequest<
+  typeof geometryContract.completeQuote
+>;
+type CompleteQuoteResponse = ClientInferResponses<
+  typeof geometryContract.completeQuote
 >;
 
 export async function completeQuote({
-  quoteId,
-  material,
-  priceDetails,
-  quantity,
-  volumeCm3,
-}: {
-  quoteId: string;
-  material: Materials[number];
-  priceDetails: PriceDetails;
-  quantity: number;
-  volumeCm3: number;
-}) {
+  params,
+  body,
+}: CompleteQuoteBody): Promise<CompleteQuoteResponse> {
   const quoteCompletionResult = await apiClient.completeQuote({
-    params: {
-      id: quoteId,
-    },
-    body: {
-      materialId: material.code,
-      materialName: material.name,
-      materialPriceFactor: material.price,
-      quantity,
-      quantityDiscount: priceDetails?.discountPercentage,
-      totalPrice: priceDetails?.total,
-      unitPrice: priceDetails?.unitPrice,
-      volumeCm3,
-    },
+    params,
+    body,
   });
 
-  if (quoteCompletionResult.status !== 200) {
-    throw Error(quoteCompletionResult.body.message);
-  }
+  return quoteCompletionResult;
 }
 
 type CreateOrderBody = ClientInferRequest<typeof geometryContract.createOrder>;
+type CreateOrderResponse = ClientInferResponses<
+  typeof geometryContract.createOrder
+>;
 
 export async function createOrder({
-  body: {
-    customerCompany,
-    customerEmail,
-    customerName,
-    paymentMethod,
-    quoteId,
-    totalAmount,
-  },
-}: CreateOrderBody): Promise<string> {
+  body,
+}: CreateOrderBody): Promise<CreateOrderResponse> {
   const orderCreationResult = await apiClient.createOrder({
-    body: {
-      customerCompany,
-      customerEmail,
-      customerName,
-      paymentMethod,
-      quoteId,
-      totalAmount,
-    },
+    body,
   });
 
-  if (orderCreationResult.status !== 200) {
-    throw Error(orderCreationResult.body.message);
-  }
-
-  return orderCreationResult.body.id;
+  return orderCreationResult;
 }
 
 type ProcessPaymentBody = ClientInferRequest<
   typeof geometryContract.processPayment
 >;
+type ProcessPaymentResponse = ClientInferResponses<
+  typeof geometryContract.processPayment
+>;
 
-export async function processPayment({ body, params }: ProcessPaymentBody) {
+export async function processPayment({
+  body,
+  params,
+}: ProcessPaymentBody): Promise<ProcessPaymentResponse> {
   const paymentProcessingResult = await apiClient.processPayment({
     body,
     params,
   });
 
-  if (paymentProcessingResult.status !== 200) {
-    throw Error(paymentProcessingResult.body.message);
-  }
+  return paymentProcessingResult;
 }

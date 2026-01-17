@@ -13,6 +13,7 @@ import Button from "./button";
 import Heading2 from "./heading2";
 import LoadingSpinner from "./loading-spinner";
 import MaterialSelection from "./materials-selection";
+import { useSnackbar } from "../context/snackbar-context";
 
 type GeometryPromise = ClientInferResponseBody<
   typeof geometryContract.getGeometryResult,
@@ -31,6 +32,7 @@ export default function Quote({
   materialsRequest: Promise<MaterialsPromise>;
   quoteId: string;
 }) {
+  const snackBar = useSnackbar();
   const router = useRouter();
   const geometryResult = use(geometryRequest);
 
@@ -61,24 +63,38 @@ export default function Quote({
   const [isLoading, setIsLoading] = useState(false);
 
   async function finishQuote() {
-    if (!priceDetails) {
-      throw new Error("Price calculation failed.");
+    try {
+      setIsLoading(true);
+      if (!priceDetails) {
+        throw new Error("Price calculation failed.");
+      }
+
+      const material = materials[selectedMaterialIndex];
+
+      const quoteCompletionResult = await completeQuote({
+        params: {
+          id: quoteId,
+        },
+        body: {
+          materialId: material.code,
+          quantity,
+        },
+      });
+
+      if (quoteCompletionResult.status !== 200) {
+        throw new Error("Could not complete quote on backend");
+      }
+
+      router.push(`/order/${quoteId}`);
+    } catch (error) {
+      if (error instanceof Error) {
+        snackBar(error.message, "error");
+      } else {
+        snackBar("Finalizing quote failed");
+      }
+    } finally {
+      setIsLoading(false);
     }
-
-    setIsLoading(true);
-
-    const material = materials[selectedMaterialIndex];
-
-    await completeQuote({
-      material,
-      quoteId,
-      priceDetails,
-      quantity,
-      volumeCm3: geometryProperties.volumeCm3,
-    });
-
-    router.push(`/order/${quoteId}`);
-    setIsLoading(false);
   }
 
   function increaseQuantity() {

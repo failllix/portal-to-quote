@@ -8,6 +8,7 @@ import { startFileProcessing } from "./actions";
 import Button from "./components/button";
 import Heading1 from "./components/heading1";
 import LoadingSpinner from "./components/loading-spinner";
+import { useSnackbar } from "./context/snackbar-context";
 
 interface DropZoneText {
   text: string;
@@ -15,6 +16,7 @@ interface DropZoneText {
 }
 
 export default function Home() {
+  const snackBar = useSnackbar();
   const router = useRouter();
 
   const dropZoneDefaultText =
@@ -32,37 +34,53 @@ export default function Home() {
       return;
     }
 
-    setIsLoading(true);
+    try {
+      setIsLoading(true);
 
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
-    );
+      const supabase = createClient(
+        process.env.NEXT_PUBLIC_SUPABASE_URL!,
+        process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
+      );
 
-    const fileId = crypto.randomUUID();
-    const storagePath = `stepFiles/${fileId}`;
+      const fileId = crypto.randomUUID();
+      const storagePath = `stepFiles/${fileId}`;
 
-    const fileBody = await selectedFile.text();
+      const fileBody = await selectedFile.text();
 
-    const { error } = await supabase.storage
-      .from("uploads")
-      .upload(storagePath, fileBody, {
-        upsert: true,
+      const { error } = await supabase.storage
+        .from("uploads")
+        .upload(storagePath, fileBody, {
+          upsert: true,
+        });
+
+      if (error) {
+        throw new Error("Uploading file to storage failed.");
+      }
+
+      const result = await startFileProcessing({
+        body: {
+          id: fileId,
+          storagePath,
+          mimeType: "text/plain",
+          originalName: selectedFile.name,
+          sizeBytes: selectedFile.size,
+        },
       });
 
-    if (error) {
-      throw error;
+      if (result.status !== 202) {
+        throw new Error("Starting file processing failed.");
+      }
+
+      router.push(`/material-selection/${result.body.id}`);
+    } catch (error) {
+      if (error instanceof Error) {
+        snackBar(error.message, "error");
+      } else {
+        snackBar("Uploading the file failed.");
+      }
+    } finally {
+      setIsLoading(false);
     }
-
-    const result = await startFileProcessing({
-      fileId,
-      storagePath,
-      fileName: selectedFile.name,
-      fileSize: selectedFile.size,
-    });
-
-    router.push(`/material-selection/${result.id}`);
-    setIsLoading(false);
   }
 
   function validateAndUpdateSelectedFiles(file: File) {
