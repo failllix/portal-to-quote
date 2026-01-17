@@ -1,21 +1,19 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
+    "target": "es2022",
     "lib": [
       "esnext",
       "dom"
     ],
-    "allowJs": true,
     "noImplicitAny": true,
     "skipLibCheck": true,
     "strict": true,
-    "noEmit": true,
-    "esModuleInterop": true,
     "module": "nodenext",
-    "moduleResolution": "nodenext",
     "resolveJsonModule": true,
+    "esModuleInterop": true,
     "isolatedModules": true,
     "incremental": true,
+    "outDir": "./dist"
   },
   "exclude": [
     "node_modules"
