@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Portal to Quote
 
-## Getting Started
+Portal where users can upload a 3D (`.step` or `.stp`) file and get a quote.
 
-First, run the development server:
+## Local development
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. Install dependencies: `npm run ci`
+1. Ensure docker daemon is running
+1. Start development servers: `npm run dev`
+1. Clone [local .env template](.env.local.example) and insert values
+   - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY`: Logged after successful start of local supabase container
+   - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`: Use the value provided for your Stripe sandbox
+   - `STRIPE_SECRET_KEY`: Use the value provided for your Stripe sandbox
+1. Restart development servers to ensure correct environment is applied
+1. Run initial database migration and apply seed data: `npm run db-update` (secondary shell)
+1. Create Policy to allow uploads for the `uploads` bucket using the [Supabase Studio](http://127.0.0.1:54323/project/default/storage/files/policies)
+   1. Click "New Policy"
+   1. Select "For full customization"
+   1. Enter a name for the policy
+   1. Make sure `SELECT` and `INSERT` are checked
+   1. Click "Review"
+   1. Click "Save policy"
+1. Access services:
+   - Application at [http://localhost:3000](http://localhost:3000)
+   - Supabase Studio at [http://localhost:54323](http://localhost:54323)
+   - Backend at [http://localhost:3333](http://localhost:3333)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Deployment
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Frontend and backend are currently deployed with Vercel.
+They are available at:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Frontend: [https://portal-to-quote.vercel.app/](https://portal-to-quote.vercel.app/)
+- Backend: [https://portal-to-quote-backend.vercel.app/](https://portal-to-quote-backend.vercel.app/)
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
