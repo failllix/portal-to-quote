@@ -2,7 +2,7 @@
 
 ## Architecture Decisions
 
-[!Architecture Sketch](./images/architecture-sketch.png)
+![Architecture Sketch](./images/architecture-sketch.png)
 
 ### Modular Monolith
 
