@@ -8,7 +8,7 @@ import type {
 } from "@ts-rest/core";
 import type { PriceDetails } from "./material-selection/logic";
 
-export async function uploadFile({
+export async function startFileProcessing({
   storagePath,
   fileId,
   fileName,
@@ -86,7 +86,7 @@ export async function createOrder({
     quoteId,
     totalAmount,
   },
-}: CreateOrderBody) {
+}: CreateOrderBody): Promise<string> {
   const orderCreationResult = await apiClient.createOrder({
     body: {
       customerCompany,
@@ -102,5 +102,20 @@ export async function createOrder({
     throw Error(orderCreationResult.body.message);
   }
 
-  return orderCreationResult.body;
+  return orderCreationResult.body.id;
+}
+
+type ProcessPaymentBody = ClientInferRequest<
+  typeof geometryContract.processPayment
+>;
+
+export async function processPayment({ body, params }: ProcessPaymentBody) {
+  const paymentProcessingResult = await apiClient.processPayment({
+    body,
+    params,
+  });
+
+  if (paymentProcessingResult.status !== 200) {
+    throw Error(paymentProcessingResult.body.message);
+  }
 }

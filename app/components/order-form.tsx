@@ -45,23 +45,6 @@ export default function OrderForm({ quote }: { quote: Quote }) {
 
     setIsLoading(true);
 
-    const { error } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${process.env.NEXT_PUBLIC_URL}/orderCompletion`,
-      },
-    });
-
-    if (error) {
-      if (error.type === "card_error" || error.type === "validation_error") {
-        setMessage(error.message ?? null);
-      }
-
-      setMessage("An unexpected error occurred.");
-      setIsLoading(false);
-      return;
-    }
-
     const formData = new FormData(event.currentTarget);
 
     const OrderFormData = z.object({
@@ -90,7 +73,7 @@ export default function OrderForm({ quote }: { quote: Quote }) {
 
     if (formDataObject.customerCompany) setIsLoading(true);
 
-    await createOrder({
+    const orderId = await createOrder({
       body: {
         customerCompany: validatedFormData.customerCompany,
         customerEmail: validatedFormData.customerEmail,
@@ -100,6 +83,23 @@ export default function OrderForm({ quote }: { quote: Quote }) {
         totalAmount: quote.totalPrice,
       },
     });
+
+    const { error } = await stripe.confirmPayment({
+      elements,
+      confirmParams: {
+        return_url: `${process.env.NEXT_PUBLIC_URL}/orderCompletion/${orderId}`,
+      },
+    });
+
+    if (error) {
+      if (error.type === "card_error" || error.type === "validation_error") {
+        setMessage(error.message ?? null);
+      }
+
+      setMessage("An unexpected error occurred.");
+      setIsLoading(false);
+      return;
+    }
 
     setIsLoading(false);
   }

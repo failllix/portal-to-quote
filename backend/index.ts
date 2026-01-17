@@ -360,32 +360,21 @@ const router = s.router(geometryContract, {
         };
       }
 
-      const orderId = await db.transaction(async () => {
-        const ordersResult = await db
-          .insert(orders)
-          .values({
-            quoteId,
-            customerName,
-            customerEmail,
-            customerCompany,
-            paymentMethod,
-            totalAmount: totalAmount.toString(),
-          })
-          .returning({ id: orders.id });
-
-        await db
-          .update(quotes)
-          .set({
-            status: "ordered",
-          })
-          .where(eq(quotes.id, quoteId));
-
-        return ordersResult[0].id;
-      });
+      const ordersResult = await db
+        .insert(orders)
+        .values({
+          quoteId,
+          customerName,
+          customerEmail,
+          customerCompany,
+          paymentMethod,
+          totalAmount: totalAmount.toString(),
+        })
+        .returning({ id: orders.id });
 
       return {
         status: 200,
-        body: { id: orderId },
+        body: { id: ordersResult[0].id },
       };
     } catch (error) {
       console.log(error);
@@ -437,11 +426,76 @@ const router = s.router(geometryContract, {
       };
     }
   },
-  processPayment: async () => {
-    return {
-      status: 200,
-      body: { id: "fooo" },
-    };
+  processPayment: async ({
+    params: { id: orderId },
+    body: { paymentStatus },
+  }) => {
+    class PaymentProcessingError {
+      message;
+      status;
+
+      constructor({ status, message }: { status: 400 | 404; message: string }) {
+        this.status = status;
+        this.message = message;
+      }
+    }
+    try {
+      await db.transaction(async (transaction) => {
+        const ordersResult = await transaction
+          .update(orders)
+          .set({
+            paymentStatus,
+          })
+          .where(eq(orders.id, orderId))
+          .returning({ quoteId: orders.quoteId });
+
+        if (ordersResult.length === 0) {
+          throw new PaymentProcessingError({
+            status: 404,
+            message: `No order with id '${orderId}' found.`,
+          });
+        }
+
+        if (ordersResult.length > 1) {
+          throw new PaymentProcessingError({
+            status: 400,
+            message: `Expected to find only one order with id '${orderId}', however found ${ordersResult.length}.`,
+          });
+        }
+
+        const quoteId = ordersResult[0].quoteId;
+
+        await transaction
+          .update(quotes)
+          .set({
+            status: "ordered",
+          })
+          .where(eq(quotes.id, quoteId));
+      });
+
+      return {
+        status: 200,
+        body: {
+          id: orderId,
+        },
+      };
+    } catch (error) {
+      if (error instanceof PaymentProcessingError) {
+        return {
+          status: error.status,
+          body: {
+            message: error.message,
+          },
+        };
+      }
+
+      return {
+        status: 500,
+        body: {
+          message: "Completing order failed.",
+        },
+      };
+    }
   },
 });
 

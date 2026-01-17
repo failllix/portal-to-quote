@@ -6,8 +6,10 @@ import { ClientInferResponseBody } from "@ts-rest/core";
 type Quote = ClientInferResponseBody<typeof geometryContract.getQuote, 200>;
 
 export default function QuoteSummary({ quote }: { quote: Quote }) {
-  if (quote.status !== "ready") {
-    throw new Error("Can only show summary for quote in 'ready' status");
+  if (!(quote.status === "ready" || quote.status === "ordered")) {
+    throw new Error(
+      "Can only show summary for quote in 'ready' or 'ordered' status",
+    );
   }
 
   return (

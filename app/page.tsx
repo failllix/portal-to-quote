@@ -4,7 +4,7 @@ import type React from "react";
 import { type ChangeEvent, useEffect, useRef, useState } from "react";
 import Button from "./components/button";
 import Heading1 from "./components/heading1";
-import { uploadFile } from "./actions";
+import { startFileProcessing } from "./actions";
 import { useRouter } from "next/navigation";
 import { createClient } from "@supabase/supabase-js";
 import LoadingSpinner from "./components/loading-spinner";
@@ -54,7 +54,7 @@ export default function Home() {
       throw error;
     }
 
-    const result = await uploadFile({
+    const result = await startFileProcessing({
       fileId,
       storagePath,
       fileName: selectedFile.name,

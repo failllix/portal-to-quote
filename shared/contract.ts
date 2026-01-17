@@ -49,7 +49,7 @@ const MaterialsResult = z.array(
     price: z.number(),
     leadTimeDays: z.number(),
     properties: z.array(z.string()),
-  })
+  }),
 );
 
 const QuoteCreationBody = z.object({
@@ -138,7 +138,7 @@ const OrderResult = z.object({
 });
 
 const PaymentProcessingBody = z.object({
-  id: z.string(),
+  paymentStatus: z.enum(["paid", "failed"]),
 });
 
 const PaymentProcessingResult = z.object({
@@ -247,6 +247,8 @@ export const geometryContract = contract.router({
     body: PaymentProcessingBody,
     responses: {
       200: PaymentProcessingResult,
+      400: ErrorResult,
+      404: ErrorResult,
       500: ErrorResult,
     },
     summary: "Add payment method to order",
