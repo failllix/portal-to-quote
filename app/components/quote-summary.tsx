@@ -1,7 +1,7 @@
 "use client";
 
-import { geometryContract } from "@/shared/contract";
-import { ClientInferResponseBody } from "@ts-rest/core";
+import type { ClientInferResponseBody } from "@ts-rest/core";
+import type { geometryContract } from "@/shared/contract";
 
 type Quote = ClientInferResponseBody<typeof geometryContract.getQuote, 200>;
 

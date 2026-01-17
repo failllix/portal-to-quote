@@ -1,7 +1,7 @@
-import Heading1 from "../../components/heading1";
-import Quote from "../../components/quote";
 import { Suspense } from "react";
 import { apiClient, disabledMemoizatioApiClient } from "@/shared/client";
+import Heading1 from "../../components/heading1";
+import Quote from "../../components/quote";
 
 export interface Material {
   name: string;

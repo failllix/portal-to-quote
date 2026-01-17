@@ -1,11 +1,8 @@
-import OrderForm from "@/app/components/order-form";
-import Heading1 from "../../components/heading1";
-import { apiClient } from "@/shared/client";
-import Heading2 from "@/app/components/heading2";
-import QuoteSummary from "@/app/components/quote-summary";
-import { Suspense } from "react";
-import { stripe } from "@/app/utils/stripe";
 import Checkout from "@/app/components/checkout";
+import QuoteSummary from "@/app/components/quote-summary";
+import { stripe } from "@/app/utils/stripe";
+import { apiClient } from "@/shared/client";
+import Heading1 from "../../components/heading1";
 
 export interface Material {
   name: string;

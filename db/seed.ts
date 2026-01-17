@@ -1,4 +1,4 @@
-import { db, connection } from "./db";
+import { connection, db } from "./db";
 import { materials } from "./schema";
 
 async function main() {

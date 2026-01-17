@@ -1,4 +1,4 @@
-import { ApiFetcherArgs, initClient, tsRestFetchApi } from "@ts-rest/core";
+import { type ApiFetcherArgs, initClient, tsRestFetchApi } from "@ts-rest/core";
 import { geometryContract } from "./contract";
 
 export const apiClient = initClient(geometryContract, {

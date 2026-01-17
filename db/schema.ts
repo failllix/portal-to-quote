@@ -1,15 +1,14 @@
 import { relations } from "drizzle-orm";
-import { datetime } from "drizzle-orm/mysql-core";
 import {
-  pgTable,
-  uuid,
-  text,
-  integer,
-  varchar,
-  jsonb,
-  timestamp,
   decimal,
+  integer,
+  jsonb,
   pgEnum,
+  pgTable,
+  text,
+  timestamp,
+  uuid,
+  varchar,
 } from "drizzle-orm/pg-core";
 
 export const quoteStatusEnum = pgEnum("quote_status", [

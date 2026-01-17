@@ -1,11 +1,10 @@
-import { use } from "react";
-import { stripe } from "../../utils/stripe";
 import { redirect } from "next/navigation";
-import { processPayment } from "../../actions";
 import Heading1 from "@/app/components/heading1";
-import { apiClient } from "@/shared/client";
-import QuoteSummary from "@/app/components/quote-summary";
 import Heading2 from "@/app/components/heading2";
+import QuoteSummary from "@/app/components/quote-summary";
+import { apiClient } from "@/shared/client";
+import { processPayment } from "../../actions";
+import { stripe } from "../../utils/stripe";
 
 export default async function OrderCompletionPage({
   params,

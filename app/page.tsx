@@ -1,12 +1,12 @@
 "use client";
 
+import { createClient } from "@supabase/supabase-js";
+import { useRouter } from "next/navigation";
 import type React from "react";
 import { type ChangeEvent, useEffect, useRef, useState } from "react";
+import { startFileProcessing } from "./actions";
 import Button from "./components/button";
 import Heading1 from "./components/heading1";
-import { startFileProcessing } from "./actions";
-import { useRouter } from "next/navigation";
-import { createClient } from "@supabase/supabase-js";
 import LoadingSpinner from "./components/loading-spinner";
 
 interface DropZoneText {

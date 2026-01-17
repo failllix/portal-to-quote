@@ -1,11 +1,11 @@
 import { createExpressEndpoints, initServer } from "@ts-rest/express";
 import bodyParser from "body-parser";
 import cors from "cors";
+import { eq } from "drizzle-orm";
 import express from "express";
-import { geometryContract } from "../shared/contract";
 import { db } from "../db/db";
 import { files, materials, orders, quotes } from "../db/schema";
-import { eq } from "drizzle-orm";
+import { geometryContract } from "../shared/contract";
 
 const app = express();
 

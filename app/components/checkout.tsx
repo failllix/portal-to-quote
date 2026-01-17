@@ -1,11 +1,10 @@
 "use client";
 
 import { Elements } from "@stripe/react-stripe-js";
+import { type Appearance, loadStripe } from "@stripe/stripe-js";
+import type { ClientInferResponseBody } from "@ts-rest/core";
+import type { geometryContract } from "@/shared/contract";
 import OrderForm from "./order-form";
-
-import { Appearance, loadStripe } from "@stripe/stripe-js";
-import { ClientInferResponseBody } from "@ts-rest/core";
-import { geometryContract } from "@/shared/contract";
 
 const stripePromise = loadStripe(
   process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!,

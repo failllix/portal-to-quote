@@ -1,22 +1,21 @@
 "use client";
 
+import type {
+  ClientInferResponseBody,
+  ClientInferResponses,
+} from "@ts-rest/core";
+import { useRouter } from "next/navigation";
 import { use, useEffect, useRef, useState } from "react";
+import type { geometryContract } from "@/shared/contract";
+import { completeQuote } from "../actions";
 import {
   calculatePriceDetails,
   type PriceDetails,
 } from "../material-selection/logic";
 import Button from "./button";
 import Heading2 from "./heading2";
-import MaterialSelection from "./materials-selection";
-
-import type { geometryContract } from "@/shared/contract";
-import type {
-  ClientInferResponseBody,
-  ClientInferResponses,
-} from "@ts-rest/core";
-import { completeQuote } from "../actions";
-import { useRouter } from "next/navigation";
 import LoadingSpinner from "./loading-spinner";
+import MaterialSelection from "./materials-selection";
 
 type GeometryPromise = ClientInferResponseBody<
   typeof geometryContract.getGeometryResult,

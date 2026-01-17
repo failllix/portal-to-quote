@@ -1,20 +1,20 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
-import Button from "./button";
-import Input from "./input";
-import RadioGroup from "./radio-group";
-import CheckboxGroup from "./checkbox-group";
 import {
   PaymentElement,
-  useStripe,
   useElements,
+  useStripe,
 } from "@stripe/react-stripe-js";
 import type { ClientInferResponseBody } from "@ts-rest/core";
+import { type FormEvent, useState } from "react";
+import * as z from "zod";
 import type { geometryContract } from "@/shared/contract";
 import { createOrder } from "../actions";
-import * as z from "zod";
+import Button from "./button";
+import CheckboxGroup from "./checkbox-group";
+import Input from "./input";
 import LoadingSpinner from "./loading-spinner";
+import RadioGroup from "./radio-group";
 
 type Quote = ClientInferResponseBody<typeof geometryContract.getQuote, 200>;
 
