@@ -6,13 +6,14 @@ Portal where users can upload a 3D (`.step` or `.stp`) file and get a quote.
 
 1. Install dependencies: `npm ci`
 1. Ensure docker daemon is running
+1. Clone [local .env template](.env.local.example), rename to `.env.local`, but do not enter any values yet
 1. Start development servers: `npm run dev`
-1. Clone [local .env template](.env.local.example), rename to `.env.local` and insert values:
+1. Setup environment variables:
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY`: Logged after successful start of local supabase container (or get with `npx supabase status` in separate shell)
    - `SUPABASE_PUBLISHABLE_DEFAULT_KEY`: Logged after successful start of local supabase container (or get with `npx supabase status` in separate shell)
    - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`: Use the value provided for your Stripe sandbox
    - `STRIPE_SECRET_KEY`: Use the value provided for your Stripe sandbox
-1. Run initial database migration and apply seed data: `npm run db-update` (in secondary shell)
+1. Apply seed data: `npm run db-update` (in secondary shell)
 1. Access services:
    - Application at [http://localhost:3000](http://localhost:3000)
    - Supabase Studio at [http://localhost:54323](http://localhost:54323)
@@ -29,3 +30,7 @@ They are available at:
 
 - Frontend: [https://portal-to-quote.vercel.app/](https://portal-to-quote.vercel.app/)
 - Backend: [https://portal-to-quote-backend.vercel.app/](https://portal-to-quote-backend.vercel.app/)
+
+## Technical Details
+
+A detailed description of technical details and considerations can be found in the [Technical Details Document](./docs/technical-details.md).
