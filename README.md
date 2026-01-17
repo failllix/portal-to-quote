@@ -9,6 +9,7 @@ Portal where users can upload a 3D (`.step` or `.stp`) file and get a quote.
 1. Start development servers: `npm run dev`
 1. Clone [local .env template](.env.local.example), rename to `.env.local` and insert values:
    - `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY`: Logged after successful start of local supabase container (or get with `npx supabase status` in separate shell)
+   - `SUPABASE_PUBLISHABLE_DEFAULT_KEY`: Logged after successful start of local supabase container (or get with `npx supabase status` in separate shell)
    - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`: Use the value provided for your Stripe sandbox
    - `STRIPE_SECRET_KEY`: Use the value provided for your Stripe sandbox
 1. Run initial database migration and apply seed data: `npm run db-update` (in secondary shell)
@@ -23,11 +24,8 @@ Test files are provided in the [public folder](./public/).
 
 ## Deployment
 
-Frontend and backend are currently deployed with Vercel.
+Frontend and backend are currently deployed using Vercel.
 They are available at:
 
 - Frontend: [https://portal-to-quote.vercel.app/](https://portal-to-quote.vercel.app/)
 - Backend: [https://portal-to-quote-backend.vercel.app/](https://portal-to-quote-backend.vercel.app/)
-
-CREATE POLICY "Allow Public Select" ON storage.objects FOR SELECT TO public USING (bucket_id = 'uploads');
-CREATE POLICY "Allow Public Upload" ON storage.objects FOR INSERT TO public WITH CHECK (bucket_id = 'uploads');

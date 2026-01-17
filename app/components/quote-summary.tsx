@@ -1,9 +1,12 @@
 "use client";
 
 import type { ClientInferResponseBody } from "@ts-rest/core";
-import type { geometryContract } from "@/shared/contract";
+import type { portalToQuoteContract } from "@/shared/contract";
 
-type Quote = ClientInferResponseBody<typeof geometryContract.getQuote, 200>;
+type Quote = ClientInferResponseBody<
+  typeof portalToQuoteContract.getQuote,
+  200
+>;
 
 export default function QuoteSummary({
   quote,

@@ -60,10 +60,7 @@ export default function Home() {
       const result = await startFileProcessing({
         body: {
           id: fileId,
-          storagePath,
-          mimeType: "text/plain",
           originalName: selectedFile.name,
-          sizeBytes: selectedFile.size,
         },
       });
 

@@ -9,9 +9,6 @@ const paymentStatusEnum = z.enum(["pending", "paid", "failed"]);
 const FileProcessingBody = z.object({
   id: z.string(),
   originalName: z.string(),
-  storagePath: z.string(),
-  sizeBytes: z.number(),
-  mimeType: z.string(),
 });
 
 const FileProcessingResult = z.object({
@@ -143,13 +140,15 @@ const ErrorResult = z.object({
   message: z.string(),
 });
 
-export const geometryContract = contract.router({
+export const portalToQuoteContract = contract.router({
   startFileProcessing: {
     method: "POST",
     path: "/api/files/startProcessing",
     body: FileProcessingBody,
     responses: {
       202: FileProcessingResult,
+      404: ErrorResult,
+      400: ErrorResult,
       500: ErrorResult,
     },
     summary: "Upload a CAD file for async processing",

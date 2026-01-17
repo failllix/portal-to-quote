@@ -8,7 +8,7 @@ import {
 import type { ClientInferResponseBody } from "@ts-rest/core";
 import { type FormEvent, useState } from "react";
 import * as z from "zod";
-import type { geometryContract } from "@/shared/contract";
+import type { portalToQuoteContract } from "@/shared/contract";
 import { createOrder } from "../actions";
 import { useSnackbar } from "../context/snackbar-context";
 import Button from "./button";
@@ -17,7 +17,10 @@ import Input from "./input";
 import LoadingSpinner from "./loading-spinner";
 import RadioGroup from "./radio-group";
 
-type Quote = ClientInferResponseBody<typeof geometryContract.getQuote, 200>;
+type Quote = ClientInferResponseBody<
+  typeof portalToQuoteContract.getQuote,
+  200
+>;
 
 export default function OrderForm({ quote }: { quote: Quote }) {
   const snackBar = useSnackbar();

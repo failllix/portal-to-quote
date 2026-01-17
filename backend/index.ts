@@ -6,7 +6,9 @@ import express from "express";
 import { db } from "../db/db";
 import { files, materials, orders, quotes } from "../db/schema";
 import { calculatePriceDetails } from "../logic/pricing";
-import { geometryContract } from "../shared/contract";
+import { portalToQuoteContract } from "../shared/contract";
+import { createClient } from "@supabase/supabase-js";
+import "dotenv/config";
 
 const app = express();
 
@@ -31,17 +33,40 @@ async function finishGeometryExtraction(fileId: string) {
     .where(eq(files.id, fileId));
 }
 
-const router = s.router(geometryContract, {
-  startFileProcessing: async ({
-    body: { id, mimeType, originalName, sizeBytes, storagePath },
-  }) => {
+const router = s.router(portalToQuoteContract, {
+  startFileProcessing: async ({ body: { id, originalName } }) => {
     try {
+      const supabase = createClient(
+        process.env.SUPABASE_URL!,
+        process.env.SUPABASE_PUBLISHABLE_DEFAULT_KEY!,
+      );
+
+      const storagePath = `stepFiles/${id}`;
+
+      const { error, data } = await supabase.storage
+        .from("uploads")
+        .download(storagePath);
+
+      if (error) {
+        return {
+          status: 404,
+          body: { message: `File with id '${id}' not found` },
+        };
+      }
+
+      if (data.size > 50_000_000) {
+        return {
+          status: 400,
+          body: { message: `File with id '${id}' is larger than 50MB` },
+        };
+      }
+
       await db.insert(files).values({
-        mimeType,
+        mimeType: "text/plain",
         id,
         originalName,
-        sizeBytes,
-        storagePath,
+        sizeBytes: data.size,
+        storagePath: storagePath,
       });
 
       // We cannot emulate async processing in production, because Vercel kills the function once the response was send. Thus, the setTimeout callback is never executed and the file processing will never finish.
@@ -586,7 +611,7 @@ const router = s.router(geometryContract, {
   },
 });
 
-createExpressEndpoints(geometryContract, router, app);
+createExpressEndpoints(portalToQuoteContract, router, app);
 
 const port = process.env.port || 3333;
 

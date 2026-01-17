@@ -12,6 +12,7 @@ COPY backend ./backend/
 COPY shared ./shared/
 COPY logic ./logic/
 COPY db ./db/
+COPY ./.env.local ./
 
 EXPOSE 3333
 

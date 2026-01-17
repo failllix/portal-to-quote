@@ -1,7 +1,7 @@
 import { type ApiFetcherArgs, initClient, tsRestFetchApi } from "@ts-rest/core";
-import { geometryContract } from "./contract";
+import { portalToQuoteContract } from "./contract";
 
-export const apiClient = initClient(geometryContract, {
+export const apiClient = initClient(portalToQuoteContract, {
   baseUrl: process.env.BACKEND_API_BASE_URL ?? "",
   baseHeaders: {},
   throwOnUnknownStatus: true,
@@ -14,7 +14,7 @@ export const apiClient = initClient(geometryContract, {
   },
 });
 
-export const disabledMemoizatioApiClient = initClient(geometryContract, {
+export const disabledMemoizatioApiClient = initClient(portalToQuoteContract, {
   baseUrl: process.env.BACKEND_API_BASE_URL ?? "",
   baseHeaders: {},
   throwOnUnknownStatus: true,

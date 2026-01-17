@@ -6,7 +6,7 @@ import type {
 } from "@ts-rest/core";
 import { useRouter } from "next/navigation";
 import { use, useEffect, useRef, useState } from "react";
-import type { geometryContract } from "@/shared/contract";
+import type { portalToQuoteContract } from "@/shared/contract";
 import { calculatePriceDetails, type PriceDetails } from "../../logic/pricing";
 import { completeQuote } from "../actions";
 import { useSnackbar } from "../context/snackbar-context";
@@ -16,11 +16,11 @@ import LoadingSpinner from "./loading-spinner";
 import MaterialSelection from "./materials-selection";
 
 type GeometryPromise = ClientInferResponseBody<
-  typeof geometryContract.getGeometryResult,
+  typeof portalToQuoteContract.getGeometryResult,
   200
 >;
 type MaterialsPromise = ClientInferResponses<
-  typeof geometryContract.getMaterials
+  typeof portalToQuoteContract.getMaterials
 >;
 
 export default function Quote({

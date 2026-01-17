@@ -2,13 +2,13 @@
 
 import type { ClientInferRequest, ClientInferResponses } from "@ts-rest/core";
 import { apiClient } from "@/shared/client";
-import type { geometryContract } from "@/shared/contract";
+import type { portalToQuoteContract } from "@/shared/contract";
 
 type StartFileProcessingBody = ClientInferRequest<
-  typeof geometryContract.startFileProcessing
+  typeof portalToQuoteContract.startFileProcessing
 >;
 type StartFileProcessingResponse = ClientInferResponses<
-  typeof geometryContract.startFileProcessing
+  typeof portalToQuoteContract.startFileProcessing
 >;
 
 export async function startFileProcessing({
@@ -22,10 +22,10 @@ export async function startFileProcessing({
 }
 
 type CompleteQuoteBody = ClientInferRequest<
-  typeof geometryContract.completeQuote
+  typeof portalToQuoteContract.completeQuote
 >;
 type CompleteQuoteResponse = ClientInferResponses<
-  typeof geometryContract.completeQuote
+  typeof portalToQuoteContract.completeQuote
 >;
 
 export async function completeQuote({
@@ -40,9 +40,11 @@ export async function completeQuote({
   return quoteCompletionResult;
 }
 
-type CreateOrderBody = ClientInferRequest<typeof geometryContract.createOrder>;
+type CreateOrderBody = ClientInferRequest<
+  typeof portalToQuoteContract.createOrder
+>;
 type CreateOrderResponse = ClientInferResponses<
-  typeof geometryContract.createOrder
+  typeof portalToQuoteContract.createOrder
 >;
 
 export async function createOrder({
@@ -56,10 +58,10 @@ export async function createOrder({
 }
 
 type ProcessPaymentBody = ClientInferRequest<
-  typeof geometryContract.processPayment
+  typeof portalToQuoteContract.processPayment
 >;
 type ProcessPaymentResponse = ClientInferResponses<
-  typeof geometryContract.processPayment
+  typeof portalToQuoteContract.processPayment
 >;
 
 export async function processPayment({

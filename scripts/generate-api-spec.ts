@@ -1,9 +1,9 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
 import { generateOpenApi } from "@ts-rest/open-api";
-import { geometryContract } from "@/shared/contract";
+import { portalToQuoteContract } from "@/shared/contract";
 
-const openApiDocument = generateOpenApi(geometryContract, {
+const openApiDocument = generateOpenApi(portalToQuoteContract, {
   info: {
     title: "My API Service",
     version: "1.0.0",
