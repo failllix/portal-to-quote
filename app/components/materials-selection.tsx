@@ -39,8 +39,18 @@ export default function MaterialSelection({
                     <td className="pl-2">{material.price}€</td>
                   </tr>
                   <tr>
-                    <td>Lead time</td>
-                    <td className="pl-2"> {material.leadTimeDays + 1} days</td>
+                    <td>Estimated delivery</td>
+                    <td className="pl-2">
+                      {new Date(
+                        Date.now() +
+                          material.leadTimeDays * 24 * 60 * 60 * 1000,
+                      ).toLocaleString("en-GB", {
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                        weekday: "long",
+                      })}
+                    </td>
                   </tr>
                 </tbody>
               </table>
