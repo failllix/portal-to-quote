@@ -39,7 +39,7 @@ export default async function MaterialSelectionPage({
   }
 
   const { client_secret: clientSecret } = await stripe.paymentIntents.create({
-    amount: quote.totalPrice,
+    amount: quote.totalPrice * 100,
     currency: "eur",
   });
 

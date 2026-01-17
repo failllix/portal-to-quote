@@ -12,6 +12,8 @@ import {
 } from "@stripe/react-stripe-js";
 import type { ClientInferResponseBody } from "@ts-rest/core";
 import type { geometryContract } from "@/shared/contract";
+import { createOrder } from "../actions";
+import * as z from "zod";
 
 type Quote = ClientInferResponseBody<typeof geometryContract.getQuote, 200>;
 
@@ -29,16 +31,55 @@ export default function OrderForm({ quote }: { quote: Quote }) {
 
   async function order(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const formData = new FormData(event.currentTarget);
-    for (var [key, value] of formData.entries()) {
-      console.log(key, value);
-    }
 
     if (!stripe || !elements) {
       return;
     }
 
-    setIsLoading(true);
+    if (quote.status !== "ready") {
+      throw new Error(
+        "Can not complete order for quote, which is not in 'ready' state."
+      );
+    }
+
+    const formData = new FormData(event.currentTarget);
+
+    const OrderFormData = z.object({
+      customerCompany: z.string().optional(),
+      customerEmail: z.string(),
+      customerName: z.string(),
+      paymentMethod: z.enum(["card", "purchase_order"]),
+    });
+
+    const formDataObject = {
+      customerCompany: formData.get("company"),
+      customerEmail: formData.get("email"),
+      customerName: formData.get("name"),
+      paymentMethod: formData.get("payment_method"),
+    };
+
+    const parsedFormData = OrderFormData.safeParse(formDataObject);
+
+    if (parsedFormData.error) {
+      throw new Error("Parsing of form data failed.", {
+        cause: parsedFormData.error,
+      });
+    }
+
+    const validatedFormData = parsedFormData.data;
+
+    if (formDataObject.customerCompany) setIsLoading(true);
+
+    await createOrder({
+      body: {
+        customerCompany: validatedFormData.customerCompany,
+        customerEmail: validatedFormData.customerEmail,
+        customerName: validatedFormData.customerName,
+        paymentMethod: validatedFormData.paymentMethod,
+        quoteId: quote.id,
+        totalAmount: quote.totalPrice,
+      },
+    });
 
     const { error } = await stripe.confirmPayment({
       elements,
@@ -70,12 +111,7 @@ export default function OrderForm({ quote }: { quote: Quote }) {
       className="flex flex-col gap-4 mt-8"
       onChange={handleFormChange}
     >
-      <Input
-        id="customer_name"
-        name="customer_name"
-        label="Name"
-        required={true}
-      ></Input>
+      <Input id="name" name="name" label="Name" required={true}></Input>
       <Input id="email" name="email" label="Email" required={true}></Input>
       <Input id="company" name="company" label="Company (Optional)"></Input>
       <RadioGroup

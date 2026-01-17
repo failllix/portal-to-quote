@@ -115,7 +115,7 @@ const OrderCreationBody = z.object({
   quoteId: z.string(),
   customerName: z.string(),
   customerEmail: z.string(),
-  customerCompany: z.string(),
+  customerCompany: z.string().optional(),
   paymentMethod: paymentMethodEnum,
   totalAmount: z.number(),
 });

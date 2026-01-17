@@ -3,7 +3,10 @@
 import { apiClient } from "@/shared/client";
 import type { geometryContract } from "@/shared/contract";
 import { createClient } from "@supabase/supabase-js";
-import type { ClientInferResponseBody } from "@ts-rest/core";
+import type {
+  ClientInferRequest,
+  ClientInferResponseBody,
+} from "@ts-rest/core";
 import type { PriceDetails } from "./material-selection/logic";
 
 export async function uploadFile(formData: FormData) {
@@ -85,4 +88,34 @@ export async function completeQuote({
   if (quoteCompletionResult.status !== 200) {
     throw Error(quoteCompletionResult.body.message);
   }
+}
+
+type CreateOrderBody = ClientInferRequest<typeof geometryContract.createOrder>;
+
+export async function createOrder({
+  body: {
+    customerCompany,
+    customerEmail,
+    customerName,
+    paymentMethod,
+    quoteId,
+    totalAmount,
+  },
+}: CreateOrderBody) {
+  const orderCreationResult = await apiClient.createOrder({
+    body: {
+      customerCompany,
+      customerEmail,
+      customerName,
+      paymentMethod,
+      quoteId,
+      totalAmount,
+    },
+  });
+
+  if (orderCreationResult.status !== 200) {
+    throw Error(orderCreationResult.body.message);
+  }
+
+  return orderCreationResult.body;
 }
