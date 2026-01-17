@@ -53,15 +53,10 @@
                     },
                     "status": {
                       "type": "string",
-                      "enum": [
-                        "in_process"
-                      ]
+                      "enum": ["in_process"]
                     }
                   },
-                  "required": [
-                    "id",
-                    "status"
-                  ]
+                  "required": ["id", "status"]
                 }
               }
             }
@@ -77,9 +72,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "message"
-                  ]
+                  "required": ["message"]
                 }
               }
             }
@@ -116,28 +109,20 @@
                       "properties": {
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "in_process",
-                            "failed"
-                          ]
+                          "enum": ["in_process", "failed"]
                         },
                         "processingTimeMs": {
                           "type": "number"
                         }
                       },
-                      "required": [
-                        "status",
-                        "processingTimeMs"
-                      ]
+                      "required": ["status", "processingTimeMs"]
                     },
                     {
                       "type": "object",
                       "properties": {
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "done"
-                          ]
+                          "enum": ["done"]
                         },
                         "properties": {
                           "type": "object",
@@ -155,11 +140,7 @@
                                   "type": "number"
                                 }
                               },
-                              "required": [
-                                "x",
-                                "y",
-                                "z"
-                              ]
+                              "required": ["x", "y", "z"]
                             },
                             "volume": {
                               "type": "number"
@@ -182,11 +163,7 @@
                           "type": "number"
                         }
                       },
-                      "required": [
-                        "status",
-                        "properties",
-                        "processingTimeMs"
-                      ]
+                      "required": ["status", "properties", "processingTimeMs"]
                     }
                   ]
                 }
@@ -204,9 +181,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "message"
-                  ]
+                  "required": ["message"]
                 }
               }
             }
@@ -222,9 +197,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "message"
-                  ]
+                  "required": ["message"]
                 }
               }
             }
@@ -297,9 +270,7 @@
                     "type": "string"
                   }
                 },
-                "required": [
-                  "fileId"
-                ]
+                "required": ["fileId"]
               }
             }
           }
@@ -316,9 +287,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "id"
-                  ]
+                  "required": ["id"]
                 }
               }
             }
@@ -334,9 +303,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "message"
-                  ]
+                  "required": ["message"]
                 }
               }
             }
@@ -352,9 +319,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "message"
-                  ]
+                  "required": ["message"]
                 }
               }
             }
@@ -391,9 +356,7 @@
                       "properties": {
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "draft"
-                          ]
+                          "enum": ["draft"]
                         },
                         "id": {
                           "type": "string"
@@ -423,10 +386,7 @@
                       "properties": {
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "ready",
-                            "ordered"
-                          ]
+                          "enum": ["ready", "ordered"]
                         },
                         "id": {
                           "type": "string"
@@ -488,9 +448,7 @@
                       "properties": {
                         "status": {
                           "type": "string",
-                          "enum": [
-                            "expired"
-                          ]
+                          "enum": ["expired"]
                         },
                         "id": {
                           "type": "string"
@@ -555,9 +513,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "message"
-                  ]
+                  "required": ["message"]
                 }
               }
             }
@@ -573,9 +529,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "message"
-                  ]
+                  "required": ["message"]
                 }
               }
             }
@@ -612,10 +566,7 @@
                     "minimum": 1
                   }
                 },
-                "required": [
-                  "materialId",
-                  "quantity"
-                ]
+                "required": ["materialId", "quantity"]
               }
             }
           }
@@ -632,9 +583,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "id"
-                  ]
+                  "required": ["id"]
                 }
               }
             }
@@ -650,9 +599,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "message"
-                  ]
+                  "required": ["message"]
                 }
               }
             }
@@ -668,9 +615,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "message"
-                  ]
+                  "required": ["message"]
                 }
               }
             }
@@ -686,9 +631,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "message"
-                  ]
+                  "required": ["message"]
                 }
               }
             }
@@ -722,10 +665,7 @@
                   },
                   "paymentMethod": {
                     "type": "string",
-                    "enum": [
-                      "card",
-                      "purchase_order"
-                    ]
+                    "enum": ["card", "purchase_order"]
                   }
                 },
                 "required": [
@@ -750,9 +690,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "id"
-                  ]
+                  "required": ["id"]
                 }
               }
             }
@@ -768,9 +706,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "message"
-                  ]
+                  "required": ["message"]
                 }
               }
             }
@@ -786,9 +722,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "message"
-                  ]
+                  "required": ["message"]
                 }
               }
             }
@@ -836,18 +770,11 @@
                     },
                     "paymentMethod": {
                       "type": "string",
-                      "enum": [
-                        "card",
-                        "purchase_order"
-                      ]
+                      "enum": ["card", "purchase_order"]
                     },
                     "paymentStatus": {
                       "type": "string",
-                      "enum": [
-                        "pending",
-                        "paid",
-                        "failed"
-                      ]
+                      "enum": ["pending", "paid", "failed"]
                     },
                     "expectedDeliveryAt": {
                       "type": "string",
@@ -891,9 +818,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "message"
-                  ]
+                  "required": ["message"]
                 }
               }
             }
@@ -909,9 +834,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "message"
-                  ]
+                  "required": ["message"]
                 }
               }
             }
@@ -942,15 +865,10 @@
                 "properties": {
                   "paymentStatus": {
                     "type": "string",
-                    "enum": [
-                      "paid",
-                      "failed"
-                    ]
+                    "enum": ["paid", "failed"]
                   }
                 },
-                "required": [
-                  "paymentStatus"
-                ]
+                "required": ["paymentStatus"]
               }
             }
           }
@@ -967,9 +885,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "id"
-                  ]
+                  "required": ["id"]
                 }
               }
             }
@@ -985,9 +901,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "message"
-                  ]
+                  "required": ["message"]
                 }
               }
             }
@@ -1003,9 +917,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "message"
-                  ]
+                  "required": ["message"]
                 }
               }
             }
@@ -1021,9 +933,7 @@
                       "type": "string"
                     }
                   },
-                  "required": [
-                    "message"
-                  ]
+                  "required": ["message"]
                 }
               }
             }

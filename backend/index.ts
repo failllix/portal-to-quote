@@ -5,8 +5,8 @@ import { eq } from "drizzle-orm";
 import express from "express";
 import { db } from "../db/db";
 import { files, materials, orders, quotes } from "../db/schema";
-import { geometryContract } from "../shared/contract";
 import { calculatePriceDetails } from "../logic/pricing";
+import { geometryContract } from "../shared/contract";
 
 const app = express();
 

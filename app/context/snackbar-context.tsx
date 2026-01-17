@@ -1,10 +1,13 @@
 "use client";
 
-import React, { createContext, useCallback, useContext, useState } from "react";
+import type React from "react";
+import { createContext, useCallback, useContext, useState } from "react";
 
-interface SnackbarContextType {
-  (message: string, variant?: "error", duration?: number): void;
-}
+type SnackbarContextType = (
+  message: string,
+  variant?: "error",
+  duration?: number,
+) => void;
 
 interface SnackBarMessage {
   id: string;

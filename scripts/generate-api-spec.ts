@@ -1,7 +1,7 @@
-import { geometryContract } from "@/shared/contract";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { generateOpenApi } from "@ts-rest/open-api";
-import * as fs from "fs";
-import * as path from "path";
+import { geometryContract } from "@/shared/contract";
 
 const openApiDocument = generateOpenApi(geometryContract, {
   info: {

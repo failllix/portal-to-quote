@@ -1,5 +1,5 @@
-import DefaultLayout from "@/app/components/default-layout";
 import type React from "react";
+import DefaultLayout from "@/app/components/default-layout";
 
 export default function OrderCompletionLayout({
   children,
