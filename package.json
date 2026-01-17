@@ -14,7 +14,8 @@
     "start": "next start",
     "supabase": "supabase start",
     "supabase-seed": "supabase seed buckets",
-    "db-update": "drizzle-kit push && tsx ./db/seed.ts"
+    "db-update": "drizzle-kit push && tsx ./db/seed.ts",
+    "test": "vitest run"
   },
   "dependencies": {
     "@stripe/react-stripe-js": "5.4.1",
@@ -50,6 +51,7 @@
     "tailwindcss": "^4",
     "tsx": "4.21.0",
     "typescript": "^5",
+    "vitest": "4.0.17",
     "zod": "3.25.76"
   }
 }
